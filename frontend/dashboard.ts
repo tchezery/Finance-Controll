@@ -1070,10 +1070,20 @@ function populatePortfolioForm(id) {
             if (btn) btn.style.display = 'inline-block';
             
             const shareBtn = document.getElementById('sharePortfolioBtn');
-            if (shareBtn && !p.is_followed) {
-                shareBtn.style.display = 'inline-block';
-            } else if (shareBtn) {
-                shareBtn.style.display = 'none'; // Can't share a portfolio you're just following
+            const unshareBtn = document.getElementById('unsharePortfolioBtn');
+            
+            if (shareBtn && unshareBtn) {
+                if (p.is_followed) {
+                    shareBtn.style.display = 'none';
+                    unshareBtn.style.display = 'none';
+                } else {
+                    shareBtn.style.display = 'inline-block';
+                    if (p.share_token) {
+                        unshareBtn.style.display = 'inline-block';
+                    } else {
+                        unshareBtn.style.display = 'none';
+                    }
+                }
             }
         }
     } else {
@@ -1089,6 +1099,8 @@ function populatePortfolioForm(id) {
         if (btn) btn.style.display = 'none';
         const shareBtn = document.getElementById('sharePortfolioBtn');
         if (shareBtn) shareBtn.style.display = 'none';
+        const unshareBtn = document.getElementById('unsharePortfolioBtn');
+        if (unshareBtn) unshareBtn.style.display = 'none';
     }
 }
 
@@ -1321,6 +1333,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch(`/api/portfolios/${id}/share`, { method: 'POST' });
         if (res.ok) {
             const data = await res.json();
+            
+            // Re-fetch user data to update the local portfolio object with the new token so the Unshare button appears
+            const userRes = await fetch('/api/user');
+            if (userRes.ok) {
+                const user = await userRes.json();
+                currentPortfolios = user.portfolios || [];
+                populatePortfolioForm(id);
+            }
+            
             navigator.clipboard.writeText(data.share_token).then(() => {
                 showToast('Share token copied to clipboard!', 'success');
             }).catch(() => {
@@ -1328,6 +1349,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             showToast('Failed to generate share token', 'error');
+        }
+    });
+
+    document.getElementById('unsharePortfolioBtn')?.addEventListener('click', async () => {
+        const profileSelect = document.getElementById('profilePortfolioSelect');
+        const id = profileSelect ? profileSelect.value : null;
+        if (!id) return;
+        
+        if (!confirm('Are you sure you want to make this portfolio private? Anyone following it will lose access.')) return;
+        
+        const res = await fetch(`/api/portfolios/${id}/unshare`, { method: 'POST' });
+        if (res.ok) {
+            showToast('Portfolio is now private!', 'success');
+            const userRes = await fetch('/api/user');
+            if (userRes.ok) {
+                const user = await userRes.json();
+                currentPortfolios = user.portfolios || [];
+                populatePortfolioForm(id);
+            }
+        } else {
+            showToast('Failed to unshare portfolio', 'error');
         }
     });
 

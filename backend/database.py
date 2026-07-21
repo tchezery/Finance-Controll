@@ -216,8 +216,12 @@ def set_active_portfolio(user_id, portfolio_id):
     conn = get_db_connection()
     conn.autocommit = True
     with conn.cursor() as cursor:
-        # verify portfolio exists and belongs to user
-        cursor.execute('SELECT id FROM portfolios WHERE id = %s AND user_id = %s', (portfolio_id, user_id))
+        # verify portfolio exists and belongs to user OR is followed by user
+        cursor.execute('''
+            SELECT id FROM portfolios WHERE id = %s AND user_id = %s
+            UNION
+            SELECT portfolio_id FROM followed_portfolios WHERE portfolio_id = %s AND user_id = %s
+        ''', (portfolio_id, user_id, portfolio_id, user_id))
         if cursor.fetchone():
             cursor.execute('UPDATE users SET active_portfolio_id = %s WHERE id = %s', (portfolio_id, user_id))
     conn.close()
@@ -233,6 +237,17 @@ def generate_share_token(portfolio_id, user_id):
         res = cursor.fetchone()
     conn.close()
     return res['share_token'] if res else None
+
+def unshare_portfolio(portfolio_id, user_id):
+    conn = get_db_connection()
+    conn.autocommit = True
+    with conn.cursor() as cursor:
+        cursor.execute("UPDATE portfolios SET share_token = NULL WHERE id = %s AND user_id = %s RETURNING id", (portfolio_id, user_id))
+        if cursor.fetchone():
+            cursor.execute("DELETE FROM followed_portfolios WHERE portfolio_id = %s", (portfolio_id,))
+            return True
+    conn.close()
+    return False
 
 def get_portfolio_by_token(token):
     conn = get_db_connection()

@@ -147,6 +147,16 @@ def share_portfolio(portfolio_id):
         return jsonify({"error": "Portfolio not found or permission denied"}), 403
     return jsonify({"success": True, "share_token": token})
 
+@app.route('/api/portfolios/<int:portfolio_id>/unshare', methods=['POST'])
+def unshare_portfolio(portfolio_id):
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    success = database.unshare_portfolio(portfolio_id, user_id)
+    if not success:
+        return jsonify({"error": "Failed to unshare portfolio"}), 403
+    return jsonify({"success": True})
+
 @app.route('/api/portfolios/follow', methods=['POST'])
 def follow_portfolio():
     user_id = session.get('user_id')
@@ -159,6 +169,7 @@ def follow_portfolio():
     if not p:
         return jsonify({"error": "Invalid share token"}), 404
         
+    database.set_active_portfolio(user_id, p['id'])
     return jsonify({"success": True, "portfolio": p})
 
 @app.route('/api/user/active_portfolio', methods=['POST'])
