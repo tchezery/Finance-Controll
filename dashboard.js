@@ -17,20 +17,28 @@ let activeMultiAssets = new Set();
 async function loadPortfolioData() {
     try {
         const resp = await fetch('/api/portfolio');
+        if (!resp.ok) {
+            const errData = await resp.json();
+            console.error('Failed to load portfolio:', errData);
+            const textEl = document.getElementById('updateTime');
+            if (textEl) textEl.textContent = errData.error || 'Erro ao carregar dados';
+            return false;
+        }
         PORTFOLIO_DATA = await resp.json();
         console.log('Portfolio data loaded:', PORTFOLIO_DATA.holdings.length, 'holdings');
         return true;
     } catch (err) {
         console.error('Failed to load portfolio_data.json:', err);
-        document.getElementById('statusText').textContent = 'Erro ao carregar dados';
+        const textEl = document.getElementById('updateTime');
+        if (textEl) textEl.textContent = 'Erro ao carregar dados';
         return false;
     }
 }
 
 // ---- Fetch Live Quotes from brapi.dev ----
 async function fetchQuotes() {
-    const statusBadge = document.getElementById('statusBadge');
-    const statusText = document.getElementById('statusText');
+    const statusBadge = document.querySelector('.status-badge');
+    const statusText = document.getElementById('updateTime');
     const lastUpdateEl = document.getElementById('lastUpdate');
 
     if (statusBadge) statusBadge.className = 'status-badge loading';
@@ -1058,10 +1066,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (res.ok) {
+            alert('Configurações salvas com sucesso!');
             dashboardStarted = false; // force reload data if URL changed
             showDashboard();
         } else {
-            alert('Failed to save settings');
+            const errData = await res.json();
+            alert('Falha ao salvar configurações: ' + (errData.error || 'Erro desconhecido'));
         }
     });
 
