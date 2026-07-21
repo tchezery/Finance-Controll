@@ -948,14 +948,31 @@ async function saveChartPeriodToDB(period) {
     const url = document.getElementById('sheetUrlInput').value;
     if (!url) return; // Don't save if no URL is set yet
     
+    const mapDate = (document.getElementById('mapDate') as HTMLSelectElement).value;
+    const mapAsset = (document.getElementById('mapAsset') as HTMLSelectElement).value;
+    const mapType = (document.getElementById('mapType') as HTMLSelectElement).value;
+    const mapQuantity = (document.getElementById('mapQuantity') as HTMLSelectElement).value;
+    const mapPrice = (document.getElementById('mapPrice') as HTMLSelectElement).value;
+    const mapTotalValue = (document.getElementById('mapTotalValue') as HTMLSelectElement).value;
+    
+    const buyIndicator = (document.getElementById('buyIndicator') as HTMLInputElement).value;
+    const sellIndicator = (document.getElementById('sellIndicator') as HTMLInputElement).value;
+    
+    // Gather Custom Tickers
+    const customTickers = {};
+    document.querySelectorAll('.custom-ticker-row').forEach(row => {
+        const name = (row.querySelector('.ct-name') as HTMLInputElement).value.trim();
+        const ticker = (row.querySelector('.ct-ticker') as HTMLInputElement).value.trim();
+        if (name && ticker) {
+            customTickers[name] = ticker.toUpperCase();
+        }
+    });
+
     const column_mappings = {
-        mapDate: document.getElementById('mapDate').value.trim(),
-        mapAsset: document.getElementById('mapAsset').value.trim(),
-        mapType: document.getElementById('mapType').value.trim(),
-        mapQuantity: document.getElementById('mapQuantity').value.trim(),
-        mapPrice: document.getElementById('mapPrice').value.trim(),
-        mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
+        mapDate, mapAsset, mapType, mapQuantity, mapPrice, mapTotalValue,
+        buyIndicator, sellIndicator, customTickers
     };
+
     const refreshInterval = document.getElementById('refreshIntervalSelect').value;
     const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
 
@@ -1063,9 +1080,21 @@ function populatePortfolioForm(id) {
                     if (sellInput) sellInput.value = m.sellIndicator || '';
                     
                     document.getElementById('mappingSection').style.display = 'block';
+                    
+                    // Render Custom Tickers
+                    const ctList = document.getElementById('customTickersList');
+                    if (ctList) {
+                        ctList.innerHTML = '';
+                        const customTickers = m.customTickers || {};
+                        for (const [name, ticker] of Object.entries(customTickers)) {
+                            addCustomTickerRow(name, ticker as str);
+                        }
+                    }
                 } catch(e){}
             } else {
                 document.getElementById('mappingSection').style.display = 'none';
+                const ctList = document.getElementById('customTickersList');
+                if (ctList) ctList.innerHTML = '';
             }
             if (btn) btn.style.display = 'inline-block';
             
@@ -1104,7 +1133,56 @@ function populatePortfolioForm(id) {
     }
 }
 
+function addCustomTickerRow(name = '', ticker = '') {
+    const list = document.getElementById('customTickersList');
+    if (!list) return;
+    
+    const div = document.createElement('div');
+    div.className = 'custom-ticker-row';
+    div.style.display = 'flex';
+    div.style.gap = '8px';
+    div.innerHTML = `
+        <input type="text" class="styled-select ct-name" style="flex: 1; box-sizing: border-box; padding: 4px;" placeholder="Spreadsheet Name (e.g. GOOGLE DRN)" value="${name}">
+        <span style="display:flex; align-items:center;">&rarr;</span>
+        <input type="text" class="styled-select ct-ticker" style="width: 80px; box-sizing: border-box; padding: 4px;" placeholder="Ticker" value="${ticker}">
+        <button class="nav-tab ct-remove" style="color: #ff6b6b; padding: 4px 8px; border-color: #ff6b6b; cursor:pointer;">X</button>
+    `;
+    
+    div.querySelector('.ct-remove').addEventListener('click', () => {
+        div.remove();
+    });
+    
+    list.appendChild(div);
+}
+
 async function checkAuthState() {
+    // Check for public share token in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const shareToken = urlParams.get('share');
+    
+    if (shareToken) {
+        // Public View Mode
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('headerProfileBtn').style.display = 'none';
+        const headerSelect = document.getElementById('headerPortfolioSelect');
+        if (headerSelect) headerSelect.style.display = 'none';
+        
+        try {
+            const res = await fetch(`/api/shared/${shareToken}`);
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('userName').innerHTML = `<span class="first-name">${data.shared_by || 'Shared'}</span><span class="last-name"> Portfolio</span>`;
+                renderDashboard(data);
+            } else {
+                showToast('Invalid or expired share link', 'error');
+                setTimeout(() => window.location.href = '/', 2000);
+            }
+        } catch(e) {
+            console.error(e);
+        }
+        return;
+    }
+
     try {
         const res = await fetch('/api/user');
         if (res.ok) {

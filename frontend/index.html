@@ -507,6 +507,16 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h4 style="font-size: 13px; margin-bottom: 8px;">Custom Ticker Mappings (Optional)</h4>
+                        <p style="font-size: 11px; margin-bottom: 12px; color: var(--text-secondary);">If an asset is incorrectly classified or doesn't show prices, map its exact spreadsheet name to the correct B3 ticker (e.g. <code>GOOGLE DRN</code> &rarr; <code>GOGL34</code>).</p>
+                        
+                        <div id="customTickersList" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
+                            <!-- Mappings will be injected here -->
+                        </div>
+                        <button id="addCustomTickerBtn" class="btn" style="font-size: 11px; padding: 4px 8px;">+ Add Mapping</button>
+                    </div>
                 </div>
 
                 <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-top: 20px;">

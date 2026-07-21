@@ -47,9 +47,15 @@ TITLE_TO_TICKER = {
 # HELPER FUNCTIONS
 # ==========================================
 
-def resolve_ticker(title_str: str) -> str:
+def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
     """Maps the full B3 name to the corresponding official Ticker."""
     clean = str(title_str).strip()
+    
+    # User's custom defined mappings take highest priority
+    if custom_tickers:
+        for name, ticker in custom_tickers.items():
+            if clean.upper() == name.upper() or clean.upper().startswith(name.upper()):
+                return ticker
     
     # Remove sufixos comuns da B3
     title_clean = re.sub(r'\s+(?:CI\s+)?(?:ER[A]?|ES|EJ|ED|ATZ|D)?\s*(?:[@#]+)?\s*$', '', clean)
@@ -149,7 +155,7 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             continue
             
         date_val = row.get(col_date, '')
-        ticker = resolve_ticker(raw_title)
+        ticker = resolve_ticker(raw_title, mappings.get('customTickers', {}))
         qty = parse_float(row.get(col_qty, 0))
         price = parse_float(row.get(col_price, 0))
         val_op = parse_float(row.get(col_val, 0))
