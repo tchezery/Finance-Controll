@@ -67,6 +67,10 @@ def auth_google():
         return jsonify({"success": True, "user": user})
     except ValueError as e:
         return jsonify({"error": "Invalid token"}), 401
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e), "trace": traceback.format_exc()}), 500
 
 @app.route('/api/user', methods=['GET'])
 def get_user():
