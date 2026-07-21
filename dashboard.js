@@ -31,9 +31,10 @@ async function loadPortfolioData() {
 async function fetchQuotes() {
     const statusBadge = document.getElementById('statusBadge');
     const statusText = document.getElementById('statusText');
+    const lastUpdateEl = document.getElementById('lastUpdate');
 
-    statusBadge.className = 'status-badge loading';
-    statusText.textContent = 'Carregando cotações...';
+    if (statusBadge) statusBadge.className = 'status-badge loading';
+    if (statusText) statusText.textContent = 'Loading quotes...';
 
     const tickers = PORTFOLIO_DATA.holdings.map(h => h.ticker);
     let fetchedCount = 0;
@@ -63,13 +64,15 @@ async function fetchQuotes() {
     }
 
     if (fetchedCount > 0) {
-        statusBadge.className = 'status-badge';
-        statusText.textContent = `${fetchedCount} cotações atualizadas`;
-        document.getElementById('lastUpdate').textContent =
-            `Atualizado: ${new Date().toLocaleString('pt-BR')}`;
+        if (statusBadge) statusBadge.className = 'status-badge';
+        if (statusText) {
+            statusText.textContent = `${fetchedCount} quotes updated`;
+            if (lastUpdateEl) lastUpdateEl.textContent = 
+                `Updated: ${new Date().toLocaleString('en-US')}`;
+        }
     } else {
-        statusBadge.className = 'status-badge error';
-        statusText.textContent = 'Falha ao carregar cotações';
+        if (statusBadge) statusBadge.className = 'status-badge error';
+        if (statusText) statusText.textContent = 'Failed to load quotes';
     }
 
     updateDashboard();
@@ -338,10 +341,17 @@ function renderAllocationChart() {
     });
 }
 
+let activeInvestmentsPeriod = '15';
+
 function renderInvestmentsChart() {
     destroyChart('investments');
     const ctx = document.getElementById('investmentsChart').getContext('2d');
-    const data = PORTFOLIO_DATA.monthlyInvestments.slice(-15);
+    
+    let data = PORTFOLIO_DATA.monthlyInvestments;
+    if (activeInvestmentsPeriod !== 'all') {
+        data = data.slice(-parseInt(activeInvestmentsPeriod));
+    }
+    
     const labels = data.map(d => formatMonth(d.month));
     const values = data.map(d => d.invested);
 
@@ -364,7 +374,7 @@ function renderInvestmentsChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `Aportado: ${formatCurrency(ctx.raw)}` } } },
+            plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `Invested: ${formatCurrency(ctx.raw)}` } } },
             scales: { x: { ticks: { font: { size: 11 } } }, y: { ticks: { font: { size: 11 }, callback: v => `R\$${v}` } } }
         }
     });
@@ -388,20 +398,20 @@ function renderHoldingsBarChart() {
             labels,
             datasets: [{
                 data: values,
-                backgroundColor: colors.map(c => c + '40'),
-                borderColor: colors,
-                borderWidth: 1.5,
-                borderRadius: 6
+                backgroundColor: colors,
+                borderColor: '#000',
+                borderWidth: 1,
+                borderRadius: 0
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `Valor: ${formatCurrency(ctx.raw)}` } } },
+            plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `Value: ${formatCurrency(ctx.raw)}` } } },
             scales: {
-                x: { ticks: { font: { size: 11 }, callback: v => `R\$${(v / 1000).toFixed(1)}k` } },
-                y: { ticks: { font: { size: 12, weight: '600' } } }
+                x: { ticks: { font: { size: 11, family: "'MS Sans Serif', Tahoma, sans-serif" }, callback: v => `R\$${(v / 1000).toFixed(1)}k` } },
+                y: { ticks: { font: { size: 11, family: "'MS Sans Serif', Tahoma, sans-serif" } } }
             }
         }
     });
@@ -419,8 +429,8 @@ function renderPerformanceChart() {
 
     const labels = withPerf.map(h => h.ticker);
     const values = withPerf.map(h => h.performance);
-    const bgColors = values.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)');
-    const borderColors = values.map(v => v >= 0 ? '#10b981' : '#ef4444');
+    const bgColors = values.map(v => v >= 0 ? '#008000' : '#ff0000');
+    const borderColors = values.map(v => '#000');
 
     chartInstances['performance'] = new Chart(ctx, {
         type: 'bar',
@@ -430,8 +440,8 @@ function renderPerformanceChart() {
                 data: values,
                 backgroundColor: bgColors,
                 borderColor: borderColors,
-                borderWidth: 1.5,
-                borderRadius: 4
+                borderWidth: 1,
+                borderRadius: 0
             }]
         },
         options: {
@@ -444,18 +454,20 @@ function renderPerformanceChart() {
                     callbacks: {
                         label: ctx => {
                             const h = withPerf[ctx.dataIndex];
-                            return [`Performance: ${formatPercent(ctx.raw)}`, `PM: ${formatCurrency(h.avgPrice)} → Atual: ${formatCurrency(h.currentPrice)}`];
+                            return [`Performance: ${formatPercent(ctx.raw)}`, `Avg: ${formatCurrency(h.avgPrice)} → Current: ${formatCurrency(h.currentPrice)}`];
                         }
                     }
                 }
             },
             scales: {
-                x: { ticks: { font: { size: 11 }, callback: v => `${v > 0 ? '+' : ''}${v.toFixed(0)}%` } },
-                y: { ticks: { font: { size: 12, weight: '600' } } }
+                x: { ticks: { font: { size: 11, family: "'MS Sans Serif', Tahoma, sans-serif" }, callback: v => `${v > 0 ? '+' : ''}${v.toFixed(0)}%` } },
+                y: { ticks: { font: { size: 11, family: "'MS Sans Serif', Tahoma, sans-serif" } } }
             }
         }
     });
 }
+
+let activeTradesPeriod = '15';
 
 function renderTradesTimeline() {
     destroyChart('trades');
@@ -471,18 +483,23 @@ function renderTradesTimeline() {
     });
 
     const allMonths = [...new Set([...Object.keys(monthlyBuys), ...Object.keys(monthlySells)])].sort();
-    const last15 = allMonths.slice(-15);
-    const labels = last15.map(m => formatMonth(m));
-    const buyValues = last15.map(m => monthlyBuys[m] || 0);
-    const sellValues = last15.map(m => -(monthlySells[m] || 0));
+    
+    let monthsToRender = allMonths;
+    if (activeTradesPeriod !== 'all') {
+        monthsToRender = allMonths.slice(-parseInt(activeTradesPeriod));
+    }
+    
+    const labels = monthsToRender.map(m => formatMonth(m));
+    const buyValues = monthsToRender.map(m => monthlyBuys[m] || 0);
+    const sellValues = monthsToRender.map(m => -(monthlySells[m] || 0));
 
     chartInstances['trades'] = new Chart(ctx, {
         type: 'bar',
         data: {
             labels,
             datasets: [
-                { label: 'Compras', data: buyValues, backgroundColor: 'rgba(16, 185, 129, 0.4)', borderColor: '#10b981', borderWidth: 1 },
-                { label: 'Vendas', data: sellValues, backgroundColor: 'rgba(239, 68, 68, 0.4)', borderColor: '#ef4444', borderWidth: 1 }
+                { label: 'Buys', data: buyValues, backgroundColor: 'rgba(16, 185, 129, 0.4)', borderColor: '#10b981', borderWidth: 1 },
+                { label: 'Sells', data: sellValues, backgroundColor: 'rgba(239, 68, 68, 0.4)', borderColor: '#ef4444', borderWidth: 1 }
             ]
         },
         options: {
@@ -593,7 +610,7 @@ function renderFullHistoryTable() {
     trades.forEach(t => {
         const tr = document.createElement('tr');
         const isCompra = t.side === 'C';
-        const typeBadge = isCompra ? '<span class="trade-badge trade-buy">Compra</span>' : '<span class="trade-badge trade-sell">Venda</span>';
+        const typeBadge = isCompra ? '<span class="trade-badge trade-buy">Buy</span>' : '<span class="trade-badge trade-sell">Sell</span>';
         const categoryClass = t.category === 'FII' ? 'fii' : t.category === 'Ações' ? 'acoes' : 'bdr';
         
         const dateParts = t.date.split('-');
@@ -670,7 +687,7 @@ async function renderSingleAssetChart(ticker) {
             datasets: [
                 {
                     type: 'scatter',
-                    label: 'Compras',
+                    label: 'Buys',
                     data: buyPoints,
                     backgroundColor: '#10b981',
                     pointRadius: ctx => ctx.raw ? 6 : 0,
@@ -679,7 +696,7 @@ async function renderSingleAssetChart(ticker) {
                 },
                 {
                     type: 'scatter',
-                    label: 'Vendas',
+                    label: 'Sells',
                     data: sellPoints,
                     backgroundColor: '#ef4444',
                     pointRadius: ctx => ctx.raw ? 6 : 0,
@@ -688,7 +705,7 @@ async function renderSingleAssetChart(ticker) {
                 },
                 {
                     type: 'line',
-                    label: 'Preço (R$)',
+                    label: 'Price (R$)',
                     data: prices,
                     borderColor: '#6366f1',
                     borderWidth: 2,
@@ -705,14 +722,14 @@ async function renderSingleAssetChart(ticker) {
                     ...tooltipConfig,
                     callbacks: {
                         label: ctx => {
-                            if (ctx.dataset.label === 'Compras') {
+                            if (ctx.dataset.label === 'Buys') {
                                 const meta = buyMeta[ctx.dataIndex];
-                                if (meta) return [`Comprado: ${meta.qty} cotas`, `Total: ${formatCurrency(meta.val)}`];
-                            } else if (ctx.dataset.label === 'Vendas') {
+                                if (meta) return [`Bought: ${meta.qty} shares`, `Total: ${formatCurrency(meta.val)}`];
+                            } else if (ctx.dataset.label === 'Sells') {
                                 const meta = sellMeta[ctx.dataIndex];
-                                if (meta) return [`Vendido: ${meta.qty} cotas`, `Total: ${formatCurrency(meta.val)}`];
+                                if (meta) return [`Sold: ${meta.qty} shares`, `Total: ${formatCurrency(meta.val)}`];
                             }
-                            return `Preço: ${formatCurrency(ctx.raw)}`;
+                            return `Price: ${formatCurrency(ctx.raw)}`;
                         }
                     }
                 } 
@@ -812,7 +829,7 @@ function initAssetAnalysisControls() {
     const tickers = PORTFOLIO_DATA.holdings.map(h => h.ticker).sort();
     
     const singleSelect = document.getElementById('singleAssetSelect');
-    singleSelect.innerHTML = '<option value="">Selecione um ativo...</option>';
+    singleSelect.innerHTML = '<option value="">Select an asset...</option>';
     tickers.forEach(t => {
         singleSelect.innerHTML += `<option value="${t}">${t}</option>`;
     });
@@ -823,7 +840,9 @@ function initAssetAnalysisControls() {
     });
     
     const multiDropdown = document.getElementById('multiAssetDropdown');
-    multiDropdown.innerHTML = '<option value="">+ Adicionar ativo</option>';
+    multiDropdown.innerHTML = '<option value="">+ Add asset</option>';
+    multiDropdown.innerHTML += '<option value="ALL_ASSETS">* Compare All</option>';
+    multiDropdown.innerHTML += '<option value="CLEAR_ALL">* Clear All</option>';
     tickers.forEach(t => {
         multiDropdown.innerHTML += `<option value="${t}">${t}</option>`;
     });
@@ -847,7 +866,15 @@ function initAssetAnalysisControls() {
 
     multiDropdown.addEventListener('change', (e) => {
         const val = e.target.value;
-        if (val && !activeMultiAssets.has(val)) {
+        if (val === 'ALL_ASSETS') {
+            tickers.forEach(t => activeMultiAssets.add(t));
+            renderPills();
+            renderMultiAssetChart();
+        } else if (val === 'CLEAR_ALL') {
+            activeMultiAssets.clear();
+            renderPills();
+            renderMultiAssetChart();
+        } else if (val && !activeMultiAssets.has(val)) {
             activeMultiAssets.add(val);
             renderPills();
             renderMultiAssetChart();
@@ -870,9 +897,34 @@ function initAssetAnalysisControls() {
     }
 }
 
+function initChartPeriodFilters() {
+    const invSelect = document.getElementById('investmentsPeriodFilter');
+    if (invSelect) {
+        invSelect.addEventListener('change', (e) => {
+            activeInvestmentsPeriod = e.target.value;
+            renderInvestmentsChart();
+        });
+    }
+
+    const trSelect = document.getElementById('tradesPeriodFilter');
+    if (trSelect) {
+        trSelect.addEventListener('change', (e) => {
+            activeTradesPeriod = e.target.value;
+            renderTradesTimeline();
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (await loadPortfolioData()) {
         initHistoryFilters();
+        initChartPeriodFilters();
         await fetchQuotes();
+        
+        // Auto-update quotes every 3 minutes
+        setInterval(async () => {
+            console.log("Auto-updating quotes...");
+            await fetchQuotes();
+        }, 3 * 60 * 1000);
     }
 });

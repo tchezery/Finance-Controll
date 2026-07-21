@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Dashboard | Investments</title>
+    <title>Finance Controll</title>
     <meta name="description" content="Interactive dashboard for monitoring investments on B3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="logo-title">Portfolio Dashboard</h1>
+                    <h1 class="logo-title">Finance Controll</h1>
                     <p class="logo-subtitle">B3 Investment — Brokerage</p>
                 </div>
             </div>
@@ -47,7 +47,7 @@
         <!-- Main Navigation -->
         <nav class="main-nav">
             <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
-            <button class="nav-tab" data-view="historyView">Histórico</button>
+            <button class="nav-tab" data-view="historyView">History</button>
         </nav>
 
         <div id="dashboardView">
@@ -142,25 +142,37 @@
             <!-- Charts Row 2 -->
             <section class="charts-row">
                 <div class="chart-card chart-medium">
-                    <div class="chart-header">
-                        <h2 class="chart-title">Monthly Contributions</h2>
+                <div class="chart-header">
+                    <h2 class="chart-title">Monthly Contributions</h2>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select id="investmentsPeriodFilter" class="modern-select">
+                            <option value="15">Last 15 months</option>
+                            <option value="36">Last 3 years</option>
+                            <option value="all">All time</option>
+                        </select>
                         <div class="chart-legend-custom">
                             <span class="legend-item"><span class="legend-dot"
                                     style="background: var(--accent-blue)"></span>Invested (R$)</span>
                         </div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="investmentsChart"></canvas>
-                    </div>
                 </div>
-                <div class="chart-card chart-medium">
-                    <div class="chart-header">
-                        <h2 class="chart-title">Purchases vs Sales</h2>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="tradesChart"></canvas>
-                    </div>
+                <div class="chart-container">
+                    <canvas id="investmentsChart"></canvas>
                 </div>
+            </div>
+            <div class="chart-card chart-medium">
+                <div class="chart-header">
+                    <h2 class="chart-title">Purchases vs Sales</h2>
+                    <select id="tradesPeriodFilter" class="modern-select">
+                        <option value="15">Last 15 months</option>
+                        <option value="36">Last 3 years</option>
+                        <option value="all">All time</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tradesChart"></canvas>
+                </div>
+            </div>
             </section>
 
             <!-- Asset Analysis -->
@@ -184,7 +196,7 @@
                         <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                             <h2 class="chart-title">Asset Comparison (%)</h2>
                             <select id="multiAssetDropdown" class="modern-select" style="min-width: 140px;">
-                                <option value="">+ Adicionar ativo</option>
+                                <option value="">+ Add asset</option>
                             </select>
                         </div>
                         <div class="multi-select-container" id="multiAssetSelectContainer" style="min-height: 32px;">
@@ -256,22 +268,22 @@
             <section class="holdings-section">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h2 class="chart-title">Histórico de Transações</h2>
+                        <h2 class="chart-title">Transaction History</h2>
                         <div style="display: flex; gap: 16px; align-items: center;">
                             <select id="historyPeriodFilter" class="modern-select" style="min-width: 140px;">
-                                <option value="all">Todo o Período</option>
-                                <option value="30">Últimos 30 dias</option>
-                                <option value="180">Últimos 6 meses</option>
-                                <option value="365">Último 1 ano</option>
-                                <option value="ytd">Este ano</option>
+                                <option value="all">All time</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="180">Last 6 months</option>
+                                <option value="365">Last 1 year</option>
+                                <option value="ytd">This year</option>
                             </select>
                             <select id="historyTickerFilter" class="modern-select" style="min-width: 150px;">
-                                <option value="all">Todos os Ativos</option>
+                                <option value="all">All Assets</option>
                             </select>
                             <div class="filter-tabs" id="historyFilterTabs">
-                                <button class="filter-tab active" data-filter="all">Todas</button>
-                                <button class="filter-tab" data-filter="C">Compras</button>
-                                <button class="filter-tab" data-filter="V">Vendas</button>
+                                <button class="filter-tab active" data-filter="all">All</button>
+                                <button class="filter-tab" data-filter="C">Buys</button>
+                                <button class="filter-tab" data-filter="V">Sells</button>
                             </div>
                         </div>
                     </div>
@@ -279,13 +291,13 @@
                         <table class="holdings-table" id="fullHistoryTable">
                             <thead>
                                 <tr>
-                                    <th>Data</th>
-                                    <th>Ativo</th>
-                                    <th>Categoria</th>
-                                    <th>Tipo</th>
-                                    <th class="value-cell">Quantidade</th>
-                                    <th class="value-cell">Preço Unitário</th>
-                                    <th class="value-cell">Valor Total</th>
+                                    <th>Date</th>
+                                    <th>Asset</th>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th class="value-cell">Amount</th>
+                                    <th class="value-cell">Unit Price</th>
+                                    <th class="value-cell">Total Value</th>
                                 </tr>
                             </thead>
                             <tbody id="fullHistoryBody">
@@ -299,8 +311,13 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Portfolio Dashboard &copy; 2026 — Data extracted from the brokerage table | Quotes via <a
-                href="https://brapi.dev" target="_blank">brapi.dev</a></p>
+        <p style="margin-bottom: 12px;">Finance Controll &copy; 2026 — Data extracted from the brokerage table | Quotes via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
+        <div style="font-size: 11px;">
+            Created by <strong>Tchezery Ribeiro</strong> | 
+            <a href="https://linkedin.com/in/tchezery" target="_blank">LinkedIn</a> | 
+            <a href="https://github.com/tchezery" target="_blank">GitHub</a> | 
+            <a href="mailto:tchezeryribeiro@gmail.com">tchezeryribeiro@gmail.com</a>
+        </div>
     </footer>
 
     <script src="dashboard.js"></script>
