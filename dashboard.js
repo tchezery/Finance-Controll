@@ -21,7 +21,7 @@ async function loadPortfolioData() {
             const errData = await resp.json();
             console.error('Failed to load portfolio:', errData);
             const textEl = document.getElementById('updateTime');
-            if (textEl) textEl.textContent = errData.error || 'Erro ao carregar dados';
+            if (textEl) textEl.textContent = errData.error || 'Error loading data';
             return false;
         }
         PORTFOLIO_DATA = await resp.json();
@@ -30,7 +30,7 @@ async function loadPortfolioData() {
     } catch (err) {
         console.error('Failed to load portfolio_data.json:', err);
         const textEl = document.getElementById('updateTime');
-        if (textEl) textEl.textContent = 'Erro ao carregar dados';
+        if (textEl) textEl.textContent = 'Error loading data';
         return false;
     }
 }
@@ -167,11 +167,11 @@ function updateKPIs() {
     const profitPercent = totalBuyValue > 0 ? (profitLoss / totalBuyValue) * 100 : 0;
 
     document.getElementById('kpiTotalValue').textContent = formatCurrency(totalCurrentValue);
-    document.getElementById('kpiTotalSub').textContent = `${PORTFOLIO_DATA.holdings.length} ativos na carteira`;
+    document.getElementById('kpiTotalSub').textContent = `${PORTFOLIO_DATA.holdings.length} assets in portfolio`;
 
     document.getElementById('kpiInvested').textContent = formatCurrency(totalBuyValue);
     const firstDate = PORTFOLIO_DATA.trades[0]?.date || '';
-    document.getElementById('kpiInvestedSub').textContent = `Desde ${firstDate.split('-').reverse().join('/')}`;
+    document.getElementById('kpiInvestedSub').textContent = `Since ${firstDate.split('-').reverse().join('/')}`;
 
     const profitEl = document.getElementById('kpiProfit');
     const profitSubEl = document.getElementById('kpiProfitSub');
@@ -183,7 +183,7 @@ function updateKPIs() {
     const soldCount = PORTFOLIO_DATA.trades
         .filter(t => t.side === 'V')
         .reduce((acc, t) => { acc.add(t.ticker); return acc; }, new Set()).size;
-    document.getElementById('kpiTradesSub').textContent = `${soldCount} ativos vendidos`;
+    document.getElementById('kpiTradesSub').textContent = `${soldCount} assets sold`;
 }
 
 // ---- Holdings Table ----
@@ -1073,12 +1073,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (res.ok) {
-            alert('Configurações salvas com sucesso!');
+            alert('Settings saved successfully!');
             dashboardStarted = false; // force reload data if URL changed
             showDashboard();
         } else {
             const errData = await res.json();
-            alert('Falha ao salvar configurações: ' + (errData.error || 'Erro desconhecido'));
+            alert('Failed to save settings: ' + (errData.error || 'Unknown error'));
         }
     });
 

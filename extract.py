@@ -47,7 +47,7 @@ TITLE_TO_TICKER = {
 # ==========================================
 
 def resolve_ticker(title_str: str) -> str:
-    """Mapeia o nome completo da B3 para o Ticker oficial correspondente."""
+    """Maps the full B3 name to the corresponding official Ticker."""
     clean = str(title_str).strip()
     
     # Remove sufixos comuns da B3
@@ -81,7 +81,7 @@ def parse_float(val) -> float:
         return 0.0
 
 def parse_date(date_val) -> str:
-    """Converte e padroniza a data para YYYY-MM-DD."""
+    """Converts and standardizes the date to YYYY-MM-DD."""
     if isinstance(date_val, datetime):
         return date_val.strftime('%Y-%m-%d')
     
@@ -98,11 +98,11 @@ def parse_date(date_val) -> str:
 # ==========================================
 
 def extract_trades(url: str, mappings: dict = None) -> list:
-    """Lê a planilha do Google Sheets via CSV e retorna as transações."""
+    """Reads the Google Sheets via CSV and returns the transactions."""
     try:
         df = pd.read_csv(url)
     except Exception as e:
-        print(f"Erro ao baixar os dados do Google Sheets: {e}")
+        print(f"Error downloading data from Google Sheets: {e}")
         return []
 
     if not mappings:
@@ -116,10 +116,10 @@ def extract_trades(url: str, mappings: dict = None) -> list:
     col_val = mappings.get('mapTotalValue') or 'Valor Operação (R$)'
 
     if col_asset not in df.columns:
-        print(f"Erro: Planilha não possui o cabeçalho '{col_asset}'.")
+        print(f"Error: Spreadsheet does not contain the header '{col_asset}'.")
         return []
 
-    # Remove linhas vazias
+    # Remove empty rows
     df = df.dropna(subset=[col_asset])
 
     trades = []
@@ -151,11 +151,11 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             'value': val_op
         })
         
-    # Ordena cronologicamente
+    # Sort chronologically
     return sorted(trades, key=lambda t: t['date'])
 
 def build_portfolio(trades: list) -> dict:
-    """Calcula posição atual, preço médio, alocação e evolução temporal."""
+    """Calculates current position, average price, allocation, and temporal evolution."""
     holdings = defaultdict(lambda: {
         'buy_qty': 0, 'buy_value': 0,
         'sell_qty': 0, 'sell_value': 0,
@@ -170,7 +170,7 @@ def build_portfolio(trades: list) -> dict:
         ticker = trade['ticker']
         month = trade['date'][:7]
         
-        # Consolida Ativos
+        # Consolidate Assets
         h = holdings[ticker]
         h['trades'] += 1
 
@@ -192,7 +192,7 @@ def build_portfolio(trades: list) -> dict:
                 avg_cost = h['total_cost'] / h['buy_qty']
                 h['total_cost'] -= avg_cost * trade['qty']
 
-    # Formata Saída JSON
+    # Format JSON Output
     portfolio = []
     for ticker, h in sorted(holdings.items()):
         if h['net_qty'] <= 0:
@@ -233,11 +233,11 @@ def build_portfolio(trades: list) -> dict:
     }
 
 def main():
-    print("Baixando dados do Google Sheets...")
+    print("Downloading data from Google Sheets...")
     trades = extract_trades(SHEETS_URL)
     
     if not trades:
-        print("Nenhuma transação encontrada.")
+        print("No transactions found.")
         return
         
     dashboard_data = build_portfolio(trades)
@@ -245,9 +245,9 @@ def main():
     with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(dashboard_data, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Sucesso! Extraídas {len(trades)} operações.")
-    print(f"✅ {len(dashboard_data['holdings'])} ativos na carteira.")
-    print(f"✅ Arquivo {OUTPUT_JSON} atualizado com sucesso!")
+    print(f"✅ Success! Extracted {len(trades)} operations.")
+    print(f"✅ {len(dashboard_data['holdings'])} assets in portfolio.")
+    print(f"✅ File {OUTPUT_JSON} updated successfully!")
 
 if __name__ == '__main__':
     main()

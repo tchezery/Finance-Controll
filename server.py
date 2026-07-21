@@ -149,7 +149,7 @@ def get_portfolio():
 
     trades = extract_trades(url, mappings)
     if not trades:
-        return jsonify({"error": "Falha ao puxar dados do Google Sheets"}), 500
+        return jsonify({"error": "Failed to fetch data from Google Sheets"}), 500
     
     dashboard_data = build_portfolio(trades)
     return jsonify(dashboard_data)
