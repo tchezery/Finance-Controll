@@ -5,5 +5,4 @@ __pycache__/
 finance_controll.db
 client_secret_*.json
 
-frontend/dist/
 frontend/node_modules/
