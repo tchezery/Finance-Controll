@@ -39,6 +39,8 @@ async function loadPortfolioData() {
 }
 // ---- Fetch Live Quotes from brapi.dev ----
 async function fetchQuotes() {
+    if (!PORTFOLIO_DATA || !PORTFOLIO_DATA.holdings)
+        return;
     const statusBadge = document.querySelector('.status-badge');
     const statusText = document.getElementById('updateTime');
     const lastUpdateEl = document.getElementById('lastUpdate');
@@ -960,6 +962,40 @@ async function handleCredentialResponse(response) {
 window.handleCredentialResponse = handleCredentialResponse;
 let currentPortfolios = [];
 let activePortfolioId = null;
+function populatePortfolioForm(id) {
+    const btn = document.getElementById('deletePortfolioBtn');
+    if (id) {
+        const p = currentPortfolios.find(x => x.id == id);
+        if (p) {
+            document.getElementById('portfolioNameInput').value = p.name;
+            document.getElementById('sheetUrlInput').value = p.sheet_url;
+            if (p.column_mappings) {
+                try {
+                    const m = JSON.parse(p.column_mappings);
+                    ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'].forEach(mid => {
+                        const el = document.getElementById(mid);
+                        if (el && m[mid])
+                            el.innerHTML = `<option value="${m[mid]}">${m[mid]}</option>`;
+                    });
+                    document.getElementById('mappingSection').style.display = 'block';
+                }
+                catch (e) { }
+            }
+            else {
+                document.getElementById('mappingSection').style.display = 'none';
+            }
+            if (btn)
+                btn.style.display = 'inline-block';
+        }
+    }
+    else {
+        document.getElementById('portfolioNameInput').value = '';
+        document.getElementById('sheetUrlInput').value = '';
+        document.getElementById('mappingSection').style.display = 'none';
+        if (btn)
+            btn.style.display = 'none';
+    }
+}
 async function checkAuthState() {
     try {
         const res = await fetch('/api/user');
@@ -1289,40 +1325,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.value = currentVals[id];
             }
         });
-    }
-    function populatePortfolioForm(id) {
-        const btn = document.getElementById('deletePortfolioBtn');
-        if (id) {
-            const p = currentPortfolios.find(x => x.id == id);
-            if (p) {
-                document.getElementById('portfolioNameInput').value = p.name;
-                document.getElementById('sheetUrlInput').value = p.sheet_url;
-                if (p.column_mappings) {
-                    try {
-                        const m = JSON.parse(p.column_mappings);
-                        ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'].forEach(mid => {
-                            const el = document.getElementById(mid);
-                            if (el && m[mid])
-                                el.innerHTML = `<option value="${m[mid]}">${m[mid]}</option>`;
-                        });
-                        document.getElementById('mappingSection').style.display = 'block';
-                    }
-                    catch (e) { }
-                }
-                else {
-                    document.getElementById('mappingSection').style.display = 'none';
-                }
-                if (btn)
-                    btn.style.display = 'inline-block';
-            }
-        }
-        else {
-            document.getElementById('portfolioNameInput').value = '';
-            document.getElementById('sheetUrlInput').value = '';
-            document.getElementById('mappingSection').style.display = 'none';
-            if (btn)
-                btn.style.display = 'none';
-        }
     }
     const manualRefreshBtn = document.getElementById('manualRefreshBtn');
     if (manualRefreshBtn) {
