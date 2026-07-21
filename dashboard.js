@@ -967,12 +967,19 @@ async function checkAuthState() {
             if (user.column_mappings) {
                 try {
                     const mappings = JSON.parse(user.column_mappings);
-                    document.getElementById('mapDate').value = mappings.mapDate || '';
-                    document.getElementById('mapAsset').value = mappings.mapAsset || '';
-                    document.getElementById('mapType').value = mappings.mapType || '';
-                    document.getElementById('mapQuantity').value = mappings.mapQuantity || '';
-                    document.getElementById('mapPrice').value = mappings.mapPrice || '';
-                    document.getElementById('mapTotalValue').value = mappings.mapTotalValue || '';
+                    const selects = ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'];
+                    selects.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            if (mappings[id]) {
+                                el.innerHTML = `<option value="${mappings[id]}">${mappings[id]}</option>`;
+                            } else {
+                                el.innerHTML = '<option value="">-- Not set --</option>';
+                            }
+                        }
+                    });
+                    const mappingSection = document.getElementById('mappingSection');
+                    if (mappingSection) mappingSection.style.display = 'block';
                 } catch(e) {}
             }
             if (user.refresh_interval !== undefined) {
@@ -1079,6 +1086,70 @@ document.addEventListener('DOMContentLoaded', () => {
     if (downloadBtn) {
         downloadBtn.addEventListener('click', () => {
             window.location.href = '/api/template';
+        });
+    }
+
+    const analyzeBtn = document.getElementById('analyzeSheetBtn');
+    if (analyzeBtn) {
+        analyzeBtn.addEventListener('click', async () => {
+            const url = document.getElementById('sheetUrlInput').value;
+            if (!url) return alert('Please enter a Google Sheets URL first');
+            
+            analyzeBtn.textContent = 'Analyzing...';
+            analyzeBtn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/sheet/headers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheet_url: url })
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    populateMappingSelects(data.headers);
+                    document.getElementById('mappingSection').style.display = 'block';
+                } else {
+                    alert('Failed to analyze sheet: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error connecting to server.');
+            }
+            
+            analyzeBtn.textContent = 'Analyze Sheet';
+            analyzeBtn.disabled = false;
+        });
+    }
+
+    function populateMappingSelects(headers) {
+        const selects = ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'];
+        const currentVals = {};
+        selects.forEach(id => currentVals[id] = document.getElementById(id).value);
+        
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            el.innerHTML = '<option value="">-- Select Column --</option>';
+            headers.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h;
+                opt.textContent = h;
+                el.appendChild(opt);
+            });
+            
+            // Auto-match logic
+            const lowerHeaders = headers.map(h => h.toLowerCase());
+            let matched = false;
+            
+            if (id === 'mapDate' && lowerHeaders.includes('data pregão')) { el.value = headers[lowerHeaders.indexOf('data pregão')]; matched = true; }
+            if (id === 'mapAsset' && lowerHeaders.includes('especificação do título')) { el.value = headers[lowerHeaders.indexOf('especificação do título')]; matched = true; }
+            if (id === 'mapType' && lowerHeaders.includes('c/v')) { el.value = headers[lowerHeaders.indexOf('c/v')]; matched = true; }
+            if (id === 'mapQuantity' && lowerHeaders.includes('quantidade')) { el.value = headers[lowerHeaders.indexOf('quantidade')]; matched = true; }
+            if (id === 'mapPrice' && lowerHeaders.includes('preço (r$)')) { el.value = headers[lowerHeaders.indexOf('preço (r$)')]; matched = true; }
+            if (id === 'mapTotalValue' && lowerHeaders.includes('valor operação (r$)')) { el.value = headers[lowerHeaders.indexOf('valor operação (r$)')]; matched = true; }
+            
+            if (!matched && headers.includes(currentVals[id])) {
+                el.value = currentVals[id];
+            }
         });
     }
 

@@ -81,6 +81,35 @@ def update_settings():
     database.update_user_settings(user_id, sheet_url, mappings_str, int(refresh_interval))
     return jsonify({"success": True, "sheet_url": sheet_url, "column_mappings": column_mappings, "refresh_interval": refresh_interval})
 
+@app.route('/api/sheet/headers', methods=['POST'])
+def get_sheet_headers():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Not logged in"}), 401
+    
+    data = request.json
+    sheet_url = data.get('sheet_url', '').strip()
+    if not sheet_url:
+        return jsonify({"error": "No URL provided"}), 400
+        
+    # Normalize Google Sheets URL to CSV format
+    if 'pubhtml' in sheet_url:
+        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
+    elif '/edit' in sheet_url:
+        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
+        
+    try:
+        req = urllib.request.Request(sheet_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            content = response.read().decode('utf-8')
+            reader = csv.reader(io.StringIO(content))
+            headers = next(reader)
+            # Remove empty columns
+            headers = [h.strip() for h in headers if h.strip()]
+            return jsonify({"success": True, "headers": headers, "normalized_url": sheet_url})
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch headers: {str(e)}"}), 400
+
 @app.route('/api/template', methods=['GET'])
 def download_template():
     output = io.StringIO()
