@@ -50,6 +50,7 @@
 
             <div class="header-right" style="flex: 1; justify-content: flex-end;">
                 <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
+                    <select id="headerPortfolioSelect" class="modern-select" style="max-width: 150px; font-size: 12px; padding: 4px 24px 4px 8px;"></select>
                     <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
                 </div>
 
@@ -356,10 +357,23 @@
 
                 <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
 
-                <div>
-                    <h3 style="font-size: 14px; margin-bottom: 8px;">Data Source Configuration</h3>
-                    <p style="font-size: 12px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):
-                    </p>
+                <div style="background: rgba(59, 130, 246, 0.05); padding: 16px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <h3 style="font-size: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        Manage Portfolios
+                        <button id="createNewPortfolioBtn" class="nav-tab" style="padding: 2px 8px; font-size: 11px;">+ New</button>
+                    </h3>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Select Portfolio to Edit:</label>
+                        <select id="profilePortfolioSelect" class="styled-select" style="width: 100%; box-sizing: border-box;"></select>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Portfolio Name:</label>
+                        <input type="text" id="portfolioNameInput" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., tchezery-finances">
+                    </div>
+
+                    <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Google Sheets Link (CSV format):</label>
                     <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared
                         properly, and copy the CSV export link here. <a href="#" id="howToLink"
                             style="color: var(--accent-primary); text-decoration: underline; margin-left: 4px;">How to
@@ -369,7 +383,7 @@
                             style="flex: 1; box-sizing: border-box;"
                             placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
                         <button id="analyzeSheetBtn" class="nav-tab"
-                            style="padding: 4px 12px; white-space: nowrap;">Analyze Sheet</button>
+                            style="padding: 4px 12px; white-space: nowrap;">Analyze</button>
                     </div>
                 </div>
 
@@ -467,8 +481,9 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button id="deletePortfolioBtn" class="btn" style="color: #ff6b6b; border-color: #ff6b6b; margin-right: auto; display: none;">Delete</button>
                     <button id="backToDashboardBtn" class="btn">Back to Dashboard</button>
-                    <button id="saveSettingsBtn" class="btn btn-primary">Save & Sync</button>
+                    <button id="saveSettingsBtn" class="btn btn-primary">Save Portfolio</button>
                 </div>
             </div>
         </div>

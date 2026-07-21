@@ -1035,6 +1035,9 @@ async function handleCredentialResponse(response) {
 // Make handleCredentialResponse available globally for Google Identity callback
 window.handleCredentialResponse = handleCredentialResponse;
 
+let currentPortfolios = [];
+let activePortfolioId = null;
+
 async function checkAuthState() {
     try {
         const res = await fetch('/api/user');
@@ -1049,26 +1052,36 @@ async function checkAuthState() {
             document.getElementById('profileNameDisplay').textContent = user.name;
             document.getElementById('profileEmailDisplay').textContent = user.email;
             
-            if (user.sheet_url) {
-                document.getElementById('sheetUrlInput').value = user.sheet_url;
-            }
-            if (user.column_mappings) {
-                try {
-                    const mappings = JSON.parse(user.column_mappings);
-                    const selects = ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'];
-                    selects.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            if (mappings[id]) {
-                                el.innerHTML = `<option value="${mappings[id]}">${mappings[id]}</option>`;
-                            } else {
-                                el.innerHTML = '<option value="">-- Not set --</option>';
-                            }
-                        }
+            // Set global variables
+            currentPortfolios = user.portfolios || [];
+            activePortfolioId = user.active_portfolio_id;
+
+            // Header Selector
+            const headerSelect = document.getElementById('headerPortfolioSelect');
+            if (headerSelect) {
+                headerSelect.innerHTML = '';
+                if (currentPortfolios.length > 0) {
+                    headerSelect.style.display = 'inline-block';
+                    currentPortfolios.forEach(p => {
+                        headerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
                     });
-                    const mappingSection = document.getElementById('mappingSection');
-                    if (mappingSection) mappingSection.style.display = 'block';
-                } catch(e) {}
+                    headerSelect.value = activePortfolioId;
+                } else {
+                    headerSelect.style.display = 'none';
+                }
+            }
+
+            // Profile Editor Selector
+            const profileSelect = document.getElementById('profilePortfolioSelect');
+            if (profileSelect) {
+                profileSelect.innerHTML = '';
+                currentPortfolios.forEach(p => {
+                    profileSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                });
+                if (activePortfolioId) {
+                    profileSelect.value = activePortfolioId;
+                    populatePortfolioForm(activePortfolioId);
+                }
             }
             if (user.refresh_interval !== undefined) {
                 window.refreshMinutes = user.refresh_interval;
@@ -1094,7 +1107,8 @@ async function checkAuthState() {
                 const trFilter = document.getElementById('tradesPeriodFilter');
                 if (trFilter) trFilter.value = user.default_chart_period;
             }
-            if (user.sheet_url) {
+            const activePortfolio = currentPortfolios.find(p => p.id == activePortfolioId);
+            if (activePortfolio && activePortfolio.sheet_url) {
                 showDashboard();
             } else {
                 showProfile();
@@ -1177,10 +1191,49 @@ document.addEventListener('DOMContentLoaded', () => {
         (document.getElementById('instructionsModal') as HTMLElement).style.display = 'none';
     });
 
+    document.getElementById('headerPortfolioSelect')?.addEventListener('change', async (e) => {
+        const id = e.target.value;
+        await fetch('/api/user/active_portfolio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ portfolio_id: id })
+        });
+        location.reload();
+    });
+
+    document.getElementById('profilePortfolioSelect')?.addEventListener('change', (e) => {
+        populatePortfolioForm(e.target.value);
+    });
+
+    document.getElementById('createNewPortfolioBtn')?.addEventListener('click', () => {
+        const profileSelect = document.getElementById('profilePortfolioSelect');
+        if (profileSelect) profileSelect.value = '';
+        populatePortfolioForm(null);
+    });
+
+    document.getElementById('deletePortfolioBtn')?.addEventListener('click', async () => {
+        const profileSelect = document.getElementById('profilePortfolioSelect');
+        const id = profileSelect ? profileSelect.value : null;
+        if (!id) return;
+
+        if (!confirm('Are you sure you want to delete this portfolio?')) return;
+
+        const res = await fetch(`/api/portfolios/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            showToast('Portfolio deleted', 'success');
+            location.reload();
+        } else {
+            showToast('Failed to delete portfolio', 'error');
+        }
+    });
+
     document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
         const url = document.getElementById('sheetUrlInput').value;
         if (!url) return showToast('Please enter a Google Sheets CSV URL', 'error');
         
+        const name = document.getElementById('portfolioNameInput').value;
+        if (!name) return showToast('Please enter a Portfolio Name', 'error');
+
         const column_mappings = {
             mapDate: document.getElementById('mapDate').value.trim(),
             mapAsset: document.getElementById('mapAsset').value.trim(),
@@ -1191,19 +1244,48 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
         const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
-        const defaultChartPeriod = activeInvestmentsPeriod; // keep current active period
-
-        const res = await fetch('/api/user/settings', {
+        
+        // 1. Save general user settings
+        await fetch('/api/user/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval, theme, default_chart_period: defaultChartPeriod })
+            body: JSON.stringify({ refresh_interval: refreshInterval, theme, default_chart_period: activeInvestmentsPeriod })
         });
+
+        // 2. Save Portfolio
+        const profileSelect = document.getElementById('profilePortfolioSelect');
+        const id = profileSelect ? profileSelect.value : null;
         
+        let res;
+        if (id) {
+            res = await fetch(`/api/portfolios/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, sheet_url: url, column_mappings })
+            });
+        } else {
+            res = await fetch('/api/portfolios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, sheet_url: url, column_mappings })
+            });
+        }
+        
+        const defaultChartPeriod = activeInvestmentsPeriod; // keep current active period
+
         if (res.ok) {
             document.body.className = theme;
             showToast('Settings saved successfully!', 'success');
-            dashboardStarted = false; // force reload data if URL changed
-            showDashboard();
+            // If we created a new one, make it active and reload
+            if (!id) {
+                const data = await res.json();
+                await fetch('/api/user/active_portfolio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ portfolio_id: data.id })
+                });
+            }
+            location.reload();
         } else {
             const errData = await res.json();
             showToast('Failed to save settings: ' + (errData.error || 'Unknown error'), 'error');
@@ -1279,6 +1361,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.value = currentVals[id];
             }
         });
+    }
+
+    function populatePortfolioForm(id) {
+        const btn = document.getElementById('deletePortfolioBtn');
+        if (id) {
+            const p = currentPortfolios.find(x => x.id == id);
+            if (p) {
+                document.getElementById('portfolioNameInput').value = p.name;
+                document.getElementById('sheetUrlInput').value = p.sheet_url;
+                if (p.column_mappings) {
+                    try {
+                        const m = JSON.parse(p.column_mappings);
+                        ['mapDate', 'mapAsset', 'mapType', 'mapQuantity', 'mapPrice', 'mapTotalValue'].forEach(mid => {
+                            const el = document.getElementById(mid);
+                            if (el && m[mid]) el.innerHTML = `<option value="${m[mid]}">${m[mid]}</option>`;
+                        });
+                        document.getElementById('mappingSection').style.display = 'block';
+                    } catch(e){}
+                } else {
+                    document.getElementById('mappingSection').style.display = 'none';
+                }
+                if (btn) btn.style.display = 'inline-block';
+            }
+        } else {
+            document.getElementById('portfolioNameInput').value = '';
+            document.getElementById('sheetUrlInput').value = '';
+            document.getElementById('mappingSection').style.display = 'none';
+            if (btn) btn.style.display = 'none';
+        }
     }
 
     const manualRefreshBtn = document.getElementById('manualRefreshBtn');

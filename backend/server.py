@@ -21,6 +21,15 @@ Session(app)
 
 GOOGLE_CLIENT_ID = '876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com'
 
+def normalize_sheet_url(sheet_url):
+    if not sheet_url: return sheet_url
+    sheet_url = sheet_url.strip()
+    if 'pubhtml' in sheet_url:
+        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
+    elif '/edit' in sheet_url:
+        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
+    return sheet_url
+
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
@@ -59,6 +68,8 @@ def get_user():
     if user_id:
         user = database.get_user_by_id(user_id)
         if user:
+            portfolios = database.get_user_portfolios(user_id)
+            user['portfolios'] = portfolios
             return jsonify(user)
     return jsonify({"error": "Not logged in"}), 401
 
@@ -68,22 +79,74 @@ def update_settings():
     if not user_id:
         return jsonify({"error": "Not logged in"}), 401
     data = request.json
-    sheet_url = data.get('sheet_url', '').strip()
     
-    # Normalize Google Sheets URL to CSV format
-    if 'pubhtml' in sheet_url:
-        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
-    elif '/edit' in sheet_url:
-        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
-
-    column_mappings = data.get('column_mappings')
-    mappings_str = json.dumps(column_mappings) if column_mappings else None
     refresh_interval = data.get('refresh_interval', 3)
     theme = data.get('theme', 'theme-claude')
     default_chart_period = data.get('default_chart_period', '1y')
     
-    database.update_user_settings(user_id, sheet_url, mappings_str, int(refresh_interval), theme, default_chart_period)
-    return jsonify({"success": True, "sheet_url": sheet_url, "column_mappings": column_mappings, "refresh_interval": refresh_interval, "theme": theme, "default_chart_period": default_chart_period})
+    database.update_user_settings(user_id, int(refresh_interval), theme, default_chart_period)
+    return jsonify({"success": True, "refresh_interval": refresh_interval, "theme": theme, "default_chart_period": default_chart_period})
+
+# ==========================================
+# Portfolio Management Routes
+# ==========================================
+
+@app.route('/api/portfolios', methods=['POST'])
+def create_portfolio():
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    data = request.json
+    name = data.get('name', 'New Portfolio').strip()
+    sheet_url = normalize_sheet_url(data.get('sheet_url', ''))
+    column_mappings = json.dumps(data.get('column_mappings')) if data.get('column_mappings') else None
+    
+    if not sheet_url:
+        return jsonify({"error": "Sheet URL is required"}), 400
+        
+    new_id = database.create_portfolio(user_id, name, sheet_url, column_mappings)
+    return jsonify({"success": True, "id": new_id})
+
+@app.route('/api/portfolios/<int:portfolio_id>', methods=['PUT'])
+def update_portfolio(portfolio_id):
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    data = request.json
+    name = data.get('name', 'Updated Portfolio').strip()
+    sheet_url = normalize_sheet_url(data.get('sheet_url', ''))
+    column_mappings = json.dumps(data.get('column_mappings')) if data.get('column_mappings') else None
+    
+    if not sheet_url:
+        return jsonify({"error": "Sheet URL is required"}), 400
+        
+    database.update_portfolio(portfolio_id, user_id, name, sheet_url, column_mappings)
+    return jsonify({"success": True})
+
+@app.route('/api/portfolios/<int:portfolio_id>', methods=['DELETE'])
+def delete_portfolio(portfolio_id):
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    database.delete_portfolio(portfolio_id, user_id)
+    return jsonify({"success": True})
+
+@app.route('/api/user/active_portfolio', methods=['POST'])
+def set_active_portfolio():
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    portfolio_id = request.json.get('portfolio_id')
+    if not portfolio_id:
+        return jsonify({"error": "portfolio_id is required"}), 400
+        
+    database.set_active_portfolio(user_id, portfolio_id)
+    return jsonify({"success": True})
+
+
+# ==========================================
+# Helpers & Utilities
+# ==========================================
 
 @app.route('/api/sheet/headers', methods=['POST'])
 def get_sheet_headers():
@@ -92,15 +155,9 @@ def get_sheet_headers():
         return jsonify({"error": "Not logged in"}), 401
     
     data = request.json
-    sheet_url = data.get('sheet_url', '').strip()
+    sheet_url = normalize_sheet_url(data.get('sheet_url', ''))
     if not sheet_url:
         return jsonify({"error": "No URL provided"}), 400
-        
-    # Normalize Google Sheets URL to CSV format
-    if 'pubhtml' in sheet_url:
-        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
-    elif '/edit' in sheet_url:
-        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
         
     try:
         req = urllib.request.Request(sheet_url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -134,21 +191,27 @@ def logout():
     return jsonify({"success": True})
 
 # ==========================================
-# API Routes
+# Core API Routes
 # ==========================================
 
 @app.route('/api/portfolio', methods=['GET'])
-def get_portfolio():
+def get_portfolio_data():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({"error": "AUTH_REQUIRED", "message": "Please log in."}), 401
         
     user = database.get_user_by_id(user_id)
-    if not user.get('sheet_url'):
-        return jsonify({"error": "URL_REQUIRED", "message": "Please configure your Google Sheet URL."}), 400
+    active_portfolio_id = user.get('active_portfolio_id')
+    
+    if not active_portfolio_id:
+        return jsonify({"error": "URL_REQUIRED", "message": "Please configure a portfolio."}), 400
+        
+    portfolio = database.get_portfolio(active_portfolio_id, user_id)
+    if not portfolio or not portfolio.get('sheet_url'):
+        return jsonify({"error": "URL_REQUIRED", "message": "Please configure a Google Sheet URL for this portfolio."}), 400
 
-    url = user['sheet_url']
-    mappings_str = user.get('column_mappings')
+    url = portfolio['sheet_url']
+    mappings_str = portfolio.get('column_mappings')
     mappings = json.loads(mappings_str) if mappings_str else None
 
     trades = extract_trades(url, mappings)
