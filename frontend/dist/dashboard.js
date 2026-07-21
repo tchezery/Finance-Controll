@@ -236,7 +236,7 @@ function renderHoldingsTable() {
                 ${formatCurrency(currentPrice)}
                 <span class="${dayClass}" style="font-size:11px; display:block;">${dayChange >= 0 ? '▲' : '▼'} ${dayChange.toFixed(2)}%</span>
             </td>
-            <td class="value-cell">${formatCurrency(currentValue)}</td>
+            <td class="${changeClass}" style="font-weight: 600;">${formatCurrency(currentValue)}</td>
             <td class="${changeClass}">${changeIcon} ${formatPercent(totalReturn)}</td>
             <td class="value-cell">${formatCurrency(h.buyValue)}</td>
         `;
