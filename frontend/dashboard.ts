@@ -549,10 +549,10 @@ function renderTradesTimeline() {
 // ---- Tab & Filter Interactions ----
 
 // Nav Tabs Logic
-document.querySelectorAll('.header-nav .nav-tab').forEach(tab => {
+document.querySelectorAll('.main-nav .nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         if (!tab.dataset.view) return;
-        document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.main-nav .nav-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         
         const targetView = tab.dataset.view;
@@ -1159,11 +1159,12 @@ async function checkAuthState() {
 }
 
 function showProfile() {
-    document.getElementById('dashboardPage').style.display = 'none';
+    document.getElementById('dashboardView').style.display = 'none';
+    document.getElementById('historyView').style.display = 'none';
     document.getElementById('profilePage').style.display = 'block';
     
-    document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
-    const profileBtn = document.getElementById('headerProfileBtn');
+    document.querySelectorAll('.main-nav .nav-tab').forEach(t => t.classList.remove('active'));
+    const profileBtn = document.querySelector('.main-nav .nav-tab[data-view="profileView"]');
     if (profileBtn) profileBtn.classList.add('active');
 }
 
@@ -1173,8 +1174,8 @@ function showDashboard() {
     document.getElementById('dashboardView').style.display = 'block';
     document.getElementById('historyView').style.display = 'none';
     
-    document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
-    const dashboardBtn = document.querySelector('.header-nav .nav-tab[data-view="dashboardView"]');
+    document.querySelectorAll('.main-nav .nav-tab').forEach(t => t.classList.remove('active'));
+    const dashboardBtn = document.querySelector('.main-nav .nav-tab[data-view="dashboardView"]');
     if (dashboardBtn) dashboardBtn.classList.add('active');
     
     startDashboard();
