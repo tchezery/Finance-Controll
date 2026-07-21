@@ -989,6 +989,13 @@ async function checkAuthState() {
             } else {
                 window.refreshMinutes = 3;
             }
+            if (user.theme) {
+                document.body.className = user.theme;
+                const themeSelect = document.getElementById('themeSelect');
+                if (themeSelect) themeSelect.value = user.theme;
+            } else {
+                document.body.className = 'theme-claude';
+            }
             if (user.sheet_url) {
                 showDashboard();
             } else {
@@ -1065,14 +1072,16 @@ document.addEventListener('DOMContentLoaded', () => {
             mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
+        const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
 
         const res = await fetch('/api/user/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval })
+            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval, theme })
         });
         
         if (res.ok) {
+            document.body.className = theme;
             alert('Settings saved successfully!');
             dashboardStarted = false; // force reload data if URL changed
             showDashboard();

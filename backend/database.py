@@ -29,6 +29,10 @@ def init_db():
         conn.execute('ALTER TABLE users ADD COLUMN refresh_interval INTEGER DEFAULT 3')
     except sqlite3.OperationalError:
         pass
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'theme-claude'")
+    except sqlite3.OperationalError:
+        pass
     conn.commit()
     conn.close()
 
@@ -56,9 +60,9 @@ def create_user(google_id, email, name):
     conn.close()
     return get_user_by_id(user_id)
 
-def update_user_settings(user_id, sheet_url, column_mappings, refresh_interval):
+def update_user_settings(user_id, sheet_url, column_mappings, refresh_interval, theme):
     conn = get_db_connection()
-    conn.execute('UPDATE users SET sheet_url = ?, column_mappings = ?, refresh_interval = ? WHERE id = ?', (sheet_url, column_mappings, refresh_interval, user_id))
+    conn.execute('UPDATE users SET sheet_url = ?, column_mappings = ?, refresh_interval = ?, theme = ? WHERE id = ?', (sheet_url, column_mappings, refresh_interval, theme, user_id))
     conn.commit()
     conn.close()
 

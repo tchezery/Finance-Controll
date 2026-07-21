@@ -8,7 +8,7 @@
     <meta name="description" content="Interactive dashboard for monitoring investments on B3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -361,6 +361,14 @@
                         <option value="10">10 minutes</option>
                     </select>
                 </div>
+                
+                <div style="margin-top: 10px;">
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Theme Preference</h3>
+                    <select id="themeSelect" class="styled-select" style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
+                        <option value="theme-claude" selected>Claude Style (Modern & Warm)</option>
+                        <option value="theme-retro">Classic Retro (Windows 95)</option>
+                    </select>
+                </div>
 
                 <div id="mappingSection" style="margin-top: 10px; display: none;">
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Column Mappings</h3>
@@ -408,12 +416,12 @@
 
     <!-- Login Overlay -->
     <div id="loginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
-        <div class="chart-card" style="width: 350px; height: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 16px -16px; color: #fff; width: calc(100% + 32px); text-align: left;">
+        <div class="chart-card" style="width: 350px; height: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px;">
+            <div class="chart-header" style="background: var(--accent-primary); padding: 8px 12px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); text-align: left; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
                 <h2 class="chart-title" style="color: #fff; margin: 0;">Authentication Required</h2>
             </div>
             <div class="logo-icon" style="margin-bottom: 10px;">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#000080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                 </svg>
             </div>
