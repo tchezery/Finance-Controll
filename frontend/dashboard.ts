@@ -1055,6 +1055,13 @@ function populatePortfolioForm(id) {
                         const el = document.getElementById(mid);
                         if (el && m[mid]) el.innerHTML = `<option value="${m[mid]}">${m[mid]}</option>`;
                     });
+                    
+                    const buyInput = document.getElementById('buyIndicator') as HTMLInputElement;
+                    if (buyInput) buyInput.value = m.buyIndicator || '';
+                    
+                    const sellInput = document.getElementById('sellIndicator') as HTMLInputElement;
+                    if (sellInput) sellInput.value = m.sellIndicator || '';
+                    
                     document.getElementById('mappingSection').style.display = 'block';
                 } catch(e){}
             } else {
@@ -1066,6 +1073,12 @@ function populatePortfolioForm(id) {
         document.getElementById('portfolioNameInput').value = '';
         document.getElementById('sheetUrlInput').value = '';
         document.getElementById('mappingSection').style.display = 'none';
+        
+        const buyInput = document.getElementById('buyIndicator') as HTMLInputElement;
+        if (buyInput) buyInput.value = '';
+        const sellInput = document.getElementById('sellIndicator') as HTMLInputElement;
+        if (sellInput) sellInput.value = '';
+        
         if (btn) btn.style.display = 'none';
     }
 }
@@ -1281,6 +1294,8 @@ document.addEventListener('DOMContentLoaded', () => {
             mapQuantity: document.getElementById('mapQuantity').value.trim(),
             mapPrice: document.getElementById('mapPrice').value.trim(),
             mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
+            buyIndicator: (document.getElementById('buyIndicator') as HTMLInputElement)?.value.trim() || '',
+            sellIndicator: (document.getElementById('sellIndicator') as HTMLInputElement)?.value.trim() || ''
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
         const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';

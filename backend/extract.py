@@ -129,10 +129,21 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             continue
             
         cv = str(row.get(col_type, '')).strip().upper()
-        if cv in ['C', 'COMPRA', 'BUY', 'B']:
+        
+        custom_buy = str(mappings.get('buyIndicator', '')).strip().upper()
+        custom_sell = str(mappings.get('sellIndicator', '')).strip().upper()
+        
+        if custom_buy and cv == custom_buy:
             cv = 'C'
-        elif cv in ['V', 'VENDA', 'SELL', 'S']:
+        elif custom_sell and cv == custom_sell:
             cv = 'V'
+        elif not custom_buy and not custom_sell:
+            if cv in ['C', 'COMPRA', 'BUY', 'B']:
+                cv = 'C'
+            elif cv in ['V', 'VENDA', 'SELL', 'S']:
+                cv = 'V'
+            else:
+                continue
         else:
             continue
             

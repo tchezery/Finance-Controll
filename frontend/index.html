@@ -479,6 +479,22 @@
                                 <option value="">Loading...</option>
                             </select>
                         </div>
+                        
+                        <div style="grid-column: span 2; margin-top: 12px;">
+                            <h4 style="font-size: 13px; margin-bottom: 8px;">Custom Buy/Sell Indicators (Optional)</h4>
+                            <p style="font-size: 11px; margin-bottom: 12px; color: var(--text-secondary);">If your spreadsheet uses different words or letters for Buy and Sell operations, define them here. Leave blank to use the standard defaults (C, V, Buy, Sell, Compra, Venda).</p>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div>
+                                    <label style="font-size: 12px; font-weight: bold; margin-bottom: 4px; display: block;">Buy Indicator</label>
+                                    <input type="text" id="buyIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., 1 or Buy">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: bold; margin-bottom: 4px; display: block;">Sell Indicator</label>
+                                    <input type="text" id="sellIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., 0 or Sell">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
