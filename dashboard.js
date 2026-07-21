@@ -945,25 +945,42 @@ async function checkAuthState() {
         const res = await fetch('/api/user');
         if (res.ok) {
             const user = await res.json();
-            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('userProfile').style.display = 'flex';
             document.getElementById('userName').textContent = user.name;
             
+            // Populate profile page data
+            document.getElementById('profileNameDisplay').textContent = user.name;
+            document.getElementById('profileEmailDisplay').textContent = user.email;
+            
             if (user.sheet_url) {
                 document.getElementById('sheetUrlInput').value = user.sheet_url;
-                document.getElementById('settingsModal').style.display = 'none';
-                startDashboard();
+                showDashboard();
             } else {
-                document.getElementById('settingsModal').style.display = 'flex';
+                showProfile();
             }
         } else {
-            document.getElementById('authContainer').style.display = 'flex';
+            // Not logged in
+            document.getElementById('loginOverlay').style.display = 'flex';
             document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'none';
+            document.getElementById('profilePage').style.display = 'none';
             document.getElementById('updateTime').textContent = 'Please log in';
         }
     } catch (e) {
         console.error("Auth check failed", e);
     }
+}
+
+function showProfile() {
+    document.getElementById('dashboardPage').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'block';
+}
+
+function showDashboard() {
+    document.getElementById('profilePage').style.display = 'none';
+    document.getElementById('dashboardPage').style.display = 'block';
+    startDashboard();
 }
 
 let dashboardStarted = false;
@@ -991,11 +1008,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('settingsBtn').addEventListener('click', () => {
-        document.getElementById('settingsModal').style.display = 'flex';
+        showProfile();
     });
 
-    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-        document.getElementById('settingsModal').style.display = 'none';
+    document.getElementById('backToDashboardBtn').addEventListener('click', () => {
+        showDashboard();
     });
 
     document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
@@ -1009,9 +1026,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (res.ok) {
-            document.getElementById('settingsModal').style.display = 'none';
-            dashboardStarted = false; // force reload
-            startDashboard();
+            dashboardStarted = false; // force reload data if URL changed
+            showDashboard();
         } else {
             alert('Failed to save settings');
         }

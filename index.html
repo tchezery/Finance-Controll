@@ -34,18 +34,9 @@
                 </div>
             </div>
             <div class="header-right">
-                <div id="authContainer" style="display: flex; align-items: center; gap: 12px;">
-                    <!-- Google Sign-In button container -->
-                    <div id="g_id_onload"
-                         data-client_id="876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com"
-                         data-callback="handleCredentialResponse"
-                         data-auto_prompt="false">
-                    </div>
-                    <div class="g_id_signin" data-type="standard" data-theme="filled_blue"></div>
-                </div>
                 <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
                     <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
-                    <button id="settingsBtn" class="nav-tab">Settings</button>
+                    <button id="settingsBtn" class="nav-tab">Profile</button>
                     <button id="logoutBtn" class="nav-tab">Logout</button>
                 </div>
                 
@@ -59,8 +50,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <!-- Main Navigation -->
+    <!-- Dashboard Page -->
+    <main id="dashboardPage" class="main-content">
+        <!-- Navigation -->
         <nav class="main-nav">
             <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
             <button class="nav-tab" data-view="historyView">History</button>
@@ -325,21 +317,54 @@
         </div> <!-- End History View -->
     </main>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-        <div class="chart-card" style="width: 400px; max-width: 90%; position: relative;">
-            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 16px -16px; color: #fff;">
-                <h2 class="chart-title" style="color: #fff; margin: 0;">Settings</h2>
-                <button id="closeSettingsBtn" style="background: #c0c0c0; border: none; box-shadow: var(--win-outset); font-weight: bold; cursor: pointer; padding: 2px 6px;">X</button>
+    <!-- Profile Page -->
+    <main id="profilePage" class="main-content" style="display: none;">
+        <div class="chart-card" style="max-width: 600px; margin: 40px auto;">
+            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 24px -16px; color: #fff;">
+                <h2 class="chart-title" style="color: #fff; margin: 0;">User Profile & Settings</h2>
             </div>
             
-            <p style="font-size: 13px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):</p>
-            <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here.</p>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div>
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Account Information</h3>
+                    <p style="font-size: 12px;"><strong>Name:</strong> <span id="profileNameDisplay"></span></p>
+                    <p style="font-size: 12px;"><strong>Email:</strong> <span id="profileEmailDisplay"></span></p>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
+
+                <div>
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Data Source Configuration</h3>
+                    <p style="font-size: 12px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):</p>
+                    <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here.</p>
+                    <input type="text" id="sheetUrlInput" class="styled-select" style="width: 100%; margin-bottom: 16px; box-sizing: border-box;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button id="backToDashboardBtn" class="nav-tab">Back to Dashboard</button>
+                    <button id="saveSettingsBtn" class="nav-tab active">Save & Sync</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Overlay -->
+    <div id="loginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="chart-card" style="width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 16px -16px; color: #fff; width: calc(100% + 32px); text-align: left;">
+                <h2 class="chart-title" style="color: #fff; margin: 0;">Authentication Required</h2>
+            </div>
+            <div class="logo-icon" style="margin-bottom: 10px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#000080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+            </div>
+            <h3 style="font-size: 16px;">Finance Controll</h3>
+            <p style="font-size: 12px; margin-bottom: 8px;">Please sign in to access your portfolio.</p>
             
-            <input type="text" id="sheetUrlInput" class="styled-select" style="width: 100%; margin-bottom: 16px; box-sizing: border-box;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
-            
-            <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                <button id="saveSettingsBtn" class="nav-tab">Save & Sync</button>
+            <div id="authContainer">
+                <div id="g_id_onload" data-client_id="876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
             </div>
         </div>
     </div>
