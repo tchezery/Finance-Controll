@@ -159,6 +159,18 @@ h1, h2, h3, .logo-title {
 .last-update {
     font-size: 11px;
     color: var(--text-muted);
+    white-space: nowrap;
+}
+
+#userName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+#updateTime {
+    white-space: nowrap;
 }
 
 /* Main Content */
