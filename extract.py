@@ -8,8 +8,7 @@ from datetime import datetime
 # CONFIGURATION & MAPPINGS
 # ==========================================
 
-EXCEL_FILE = 'QUOTAS.xlsx'
-SHEET_NAME = 'Página1'
+SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPqraz9JBVRY6KsRI3kqzusZZcKFruYCKsRnHvaVjqIhd_gY962XiH1viMgt8fLfCS3kQieDNky4Rt/pub?output=csv'
 OUTPUT_JSON = 'portfolio_data.json'
 
 TITLE_TO_TICKER = {
@@ -91,12 +90,12 @@ def parse_date(date_val) -> str:
 # MAIN EXTRACTION LOGIC
 # ==========================================
 
-def extract_trades(file_path: str, sheet_name: str) -> list:
-    """Lê a planilha e retorna uma lista de dicionários representando as transações."""
+def extract_trades(url: str) -> list:
+    """Lê a planilha do Google Sheets via CSV e retorna as transações."""
     try:
-        df = pd.read_excel(file_path, sheet_name=sheet_name)
-    except FileNotFoundError:
-        print(f"Erro: Arquivo {file_path} não encontrado.")
+        df = pd.read_csv(url)
+    except Exception as e:
+        print(f"Erro ao baixar os dados do Google Sheets: {e}")
         return []
 
     col_title = 'Especificação do Título'
@@ -218,8 +217,8 @@ def build_portfolio(trades: list) -> dict:
     }
 
 def main():
-    print(f"Lendo dados de {EXCEL_FILE}...")
-    trades = extract_trades(EXCEL_FILE, SHEET_NAME)
+    print("Baixando dados do Google Sheets...")
+    trades = extract_trades(SHEETS_URL)
     
     if not trades:
         print("Nenhuma transação encontrada.")

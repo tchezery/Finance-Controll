@@ -12,7 +12,7 @@ let chartInstances = {};
 // ---- Load portfolio data from JSON ----
 async function loadPortfolioData() {
     try {
-        const resp = await fetch('./portfolio_data.json');
+        const resp = await fetch('/api/portfolio');
         PORTFOLIO_DATA = await resp.json();
         console.log('Portfolio data loaded:', PORTFOLIO_DATA.holdings.length, 'holdings');
         return true;
