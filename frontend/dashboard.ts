@@ -1164,6 +1164,10 @@ async function startDashboard() {
                 await fetchQuotes();
             }, window.refreshMinutes * 60 * 1000);
         }
+    } else {
+        document.getElementById('updateTime').textContent = 'Error loading data';
+        showToast('Failed to load portfolio data. Please check your Google Sheets URL and mappings.', 'error');
+        showProfile();
     }
 }
 
