@@ -274,6 +274,9 @@ h1, h2, h3, .logo-title {
 .kpi-sub.positive { color: var(--accent-green); }
 .kpi-sub.negative { color: var(--accent-red); }
 
+.change-positive { color: var(--accent-green); }
+.change-negative { color: var(--accent-red); }
+
 /* Charts */
 .charts-row {
     display: grid;
