@@ -11,9 +11,11 @@ from google.auth.transport import requests as google_requests
 from extract import extract_trades, build_portfolio, SHEETS_URL
 import database
 
-app = Flask(__name__, static_folder='.')
+FRONTEND_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
+app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 app.secret_key = os.environ.get('SECRET_KEY', 'super-secret-finance-key')
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = os.path.join(os.path.dirname(__file__), 'flask_session')
 app.config['SESSION_PERMANENT'] = True
 Session(app)
 
@@ -21,12 +23,12 @@ GOOGLE_CLIENT_ID = '876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleuse
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
-    if os.path.exists(path):
-        return send_from_directory('.', path)
+    if os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
     return "Not Found", 404
 
 # ==========================================

@@ -15,7 +15,7 @@ load_dotenv()
 
 SHEETS_URL = os.getenv('SHEETS_URL')
 
-OUTPUT_JSON = 'portfolio_data.json'
+OUTPUT_JSON = os.path.join(os.path.dirname(__file__), 'portfolio_data.json')
 
 
 TITLE_TO_TICKER = {
