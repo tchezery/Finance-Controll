@@ -9,7 +9,9 @@ from datetime import datetime
 # ==========================================
 
 SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPqraz9JBVRY6KsRI3kqzusZZcKFruYCKsRnHvaVjqIhd_gY962XiH1viMgt8fLfCS3kQieDNky4Rt/pub?output=csv'
+
 OUTPUT_JSON = 'portfolio_data.json'
+
 
 TITLE_TO_TICKER = {
     'FII MAXI REN': 'MXRF11',
