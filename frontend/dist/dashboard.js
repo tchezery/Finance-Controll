@@ -1514,6 +1514,15 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetchQuotes();
         });
     }
+    const viewPublicShareBtn = document.getElementById('viewPublicShareBtn');
+    if (viewPublicShareBtn) {
+        viewPublicShareBtn.addEventListener('click', () => {
+            const token = document.getElementById('publicShareInput').value.trim();
+            if (token) {
+                window.location.href = `/?share=${token}`;
+            }
+        });
+    }
     // Check auth on load
     checkAuthState();
 });
