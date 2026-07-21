@@ -1172,7 +1172,15 @@ async function checkAuthState() {
             if (res.ok) {
                 const data = await res.json();
                 document.getElementById('userName').innerHTML = `<span class="first-name">${data.shared_by || 'Shared'}</span><span class="last-name"> Portfolio</span>`;
-                renderDashboard(data);
+                PORTFOLIO_DATA = data;
+                dashboardStarted = true;
+                initHistoryFilters();
+                initChartPeriodFilters();
+                await fetchQuotes();
+                
+                // Hide manual tabs
+                document.getElementById('profilePage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
             } else {
                 showToast('Invalid or expired share link', 'error');
                 setTimeout(() => window.location.href = '/', 2000);
