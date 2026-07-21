@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
     <meta name="description" content="Interactive dashboard for monitoring investments on B3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Background removed for Apple-style minimalist design -->
 
@@ -19,7 +22,8 @@
         <div class="header-content">
             <div class="logo-section">
                 <div class="logo-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                     </svg>
                 </div>
@@ -40,156 +44,266 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- KPI Cards Row -->
-        <section class="kpi-section">
-            <div class="kpi-card kpi-total">
-                <div class="kpi-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Total Portfolio Value</span>
-                    <span class="kpi-value" id="kpiTotalValue">--</span>
-                    <span class="kpi-sub" id="kpiTotalSub">Calculating...</span>
-                </div>
-            </div>
-            <div class="kpi-card kpi-invested">
-                <div class="kpi-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Total Invested</span>
-                    <span class="kpi-value" id="kpiInvested">--</span>
-                    <span class="kpi-sub" id="kpiInvestedSub">--</span>
-                </div>
-            </div>
-            <div class="kpi-card kpi-profit">
-                <div class="kpi-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Profit / Loss</span>
-                    <span class="kpi-value" id="kpiProfit">--</span>
-                    <span class="kpi-sub" id="kpiProfitSub">Calculating...</span>
-                </div>
-            </div>
-            <div class="kpi-card kpi-dividends">
-                <div class="kpi-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22V8"/><path d="m3 3 5 5"/><path d="m21 3-5 5"/></svg>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Total Trades</span>
-                    <span class="kpi-value" id="kpiTrades">--</span>
-                    <span class="kpi-sub" id="kpiTradesSub">Since the beginning</span>
-                </div>
-            </div>
-        </section>
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
+            <button class="nav-tab" data-view="historyView">Histórico</button>
+        </nav>
 
-        <!-- Charts Row 1 -->
-        <section class="charts-row">
-            <div class="chart-card chart-large">
-                <div class="chart-header">
-                    <h2 class="chart-title">Evolution of Invested Wealth</h2>
-                    <div class="chart-legend-custom">
-                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-primary)"></span>Accumulated Value (R$)</span>
+        <div id="dashboardView">
+            <!-- KPI Cards Row -->
+            <section class="kpi-section">
+                <div class="kpi-card kpi-total">
+                    <div class="kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Total Portfolio Value</span>
+                        <span class="kpi-value" id="kpiTotalValue">--</span>
+                        <span class="kpi-sub" id="kpiTotalSub">Calculating...</span>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="evolutionChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card chart-small">
-                <div class="chart-header">
-                    <h2 class="chart-title">Allocation by Category</h2>
-                </div>
-                <div class="chart-container chart-container-donut">
-                    <canvas id="allocationChart"></canvas>
-                </div>
-                <div class="allocation-legend" id="allocationLegend"></div>
-            </div>
-        </section>
-
-        <!-- Charts Row 2 -->
-        <section class="charts-row">
-            <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Monthly Contributions</h2>
-                    <div class="chart-legend-custom">
-                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-blue)"></span>Invested (R$)</span>
+                <div class="kpi-card kpi-invested">
+                    <div class="kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Total Invested</span>
+                        <span class="kpi-value" id="kpiInvested">--</span>
+                        <span class="kpi-sub" id="kpiInvestedSub">--</span>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="investmentsChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Purchases vs Sales</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="tradesChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Holdings Table -->
-        <section class="holdings-section">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h2 class="chart-title">Asset Portfolio</h2>
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" data-filter="all">All</button>
-                        <button class="filter-tab" data-filter="FII">FII</button>
-                        <button class="filter-tab" data-filter="Ações">Stocks</button>
-                        <button class="filter-tab" data-filter="BDR">BDR</button>
+                <div class="kpi-card kpi-profit">
+                    <div class="kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                            <polyline points="17 6 23 6 23 12" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Profit / Loss</span>
+                        <span class="kpi-value" id="kpiProfit">--</span>
+                        <span class="kpi-sub" id="kpiProfitSub">Calculating...</span>
                     </div>
                 </div>
-                <div class="table-wrapper">
-                    <table class="holdings-table" id="holdingsTable">
-                        <thead>
-                            <tr>
-                                <th>Asset</th>
-                                <th>Category</th>
-                                <th>Shares</th>
-                                <th>Average Price</th>
-                                <th>Current Quote</th>
-                                <th>Current Value</th>
-                                <th>Total Return</th>
-                                <th>Total Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody id="holdingsBody">
-                        </tbody>
-                    </table>
+                <div class="kpi-card kpi-dividends">
+                    <div class="kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M16 3h5v5" />
+                            <path d="M8 3H3v5" />
+                            <path d="M12 22V8" />
+                            <path d="m3 3 5 5" />
+                            <path d="m21 3-5 5" />
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Total Trades</span>
+                        <span class="kpi-value" id="kpiTrades">--</span>
+                        <span class="kpi-sub" id="kpiTradesSub">Since the beginning</span>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Bottom Charts -->
-        <section class="charts-row">
-            <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Portfolio Composition</h2>
+            <!-- Charts Row 1 -->
+            <section class="charts-row">
+                <div class="chart-card chart-large">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Evolution of Invested Wealth</h2>
+                        <div class="chart-legend-custom">
+                            <span class="legend-item"><span class="legend-dot"
+                                    style="background: var(--accent-primary)"></span>Accumulated Value (R$)</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="holdingsBarChart"></canvas>
+                <div class="chart-card chart-small">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Allocation by Category</h2>
+                    </div>
+                    <div class="chart-container chart-container-donut">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                    <div class="allocation-legend" id="allocationLegend"></div>
                 </div>
-            </div>
-            <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Performance by Asset (%)</h2>
+            </section>
+
+            <!-- Charts Row 2 -->
+            <section class="charts-row">
+                <div class="chart-card chart-medium">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Monthly Contributions</h2>
+                        <div class="chart-legend-custom">
+                            <span class="legend-item"><span class="legend-dot"
+                                    style="background: var(--accent-blue)"></span>Invested (R$)</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="investmentsChart"></canvas>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
+                <div class="chart-card chart-medium">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Purchases vs Sales</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tradesChart"></canvas>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <!-- Asset Analysis -->
+            <section class="charts-row">
+                <div class="chart-card chart-medium" id="singleAssetCard">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Asset Timeline</h2>
+                        <div class="header-controls">
+                            <select id="singleAssetSelect" class="styled-select">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="singleAssetChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-medium" id="multiAssetCard">
+                    <div class="chart-header"
+                        style="flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                            <h2 class="chart-title">Asset Comparison (%)</h2>
+                            <select id="multiAssetDropdown" class="modern-select" style="min-width: 140px;">
+                                <option value="">+ Adicionar ativo</option>
+                            </select>
+                        </div>
+                        <div class="multi-select-container" id="multiAssetSelectContainer" style="min-height: 32px;">
+                            <!-- Pills will be injected here -->
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 240px; margin-top: 10px;">
+                        <canvas id="multiAssetChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Holdings Table -->
+            <section class="holdings-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Asset Portfolio</h2>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">All</button>
+                            <button class="filter-tab" data-filter="FII">FII</button>
+                            <button class="filter-tab" data-filter="Ações">Stocks</button>
+                            <button class="filter-tab" data-filter="BDR">BDR</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="holdings-table" id="holdingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Category</th>
+                                    <th class="value-cell">Amount</th>
+                                    <th class="value-cell">Average Price</th>
+                                    <th class="value-cell">Current Quote</th>
+                                    <th class="value-cell">Current Value</th>
+                                    <th class="value-cell">Total Return</th>
+                                    <th class="value-cell">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holdingsBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Charts -->
+            <section class="charts-row">
+                <div class="chart-card chart-medium">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Portfolio Composition</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="holdingsBarChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-medium">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Performance by Asset (%)</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div> <!-- End Dashboard View -->
+
+        <!-- History View -->
+        <div id="historyView" style="display: none;">
+            <section class="holdings-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Histórico de Transações</h2>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <select id="historyPeriodFilter" class="modern-select" style="min-width: 140px;">
+                                <option value="all">Todo o Período</option>
+                                <option value="30">Últimos 30 dias</option>
+                                <option value="180">Últimos 6 meses</option>
+                                <option value="365">Último 1 ano</option>
+                                <option value="ytd">Este ano</option>
+                            </select>
+                            <select id="historyTickerFilter" class="modern-select" style="min-width: 150px;">
+                                <option value="all">Todos os Ativos</option>
+                            </select>
+                            <div class="filter-tabs" id="historyFilterTabs">
+                                <button class="filter-tab active" data-filter="all">Todas</button>
+                                <button class="filter-tab" data-filter="C">Compras</button>
+                                <button class="filter-tab" data-filter="V">Vendas</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="holdings-table" id="fullHistoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Ativo</th>
+                                    <th>Categoria</th>
+                                    <th>Tipo</th>
+                                    <th class="value-cell">Quantidade</th>
+                                    <th class="value-cell">Preço Unitário</th>
+                                    <th class="value-cell">Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fullHistoryBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div> <!-- End History View -->
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Portfolio Dashboard &copy; 2026 — Data extracted from the brokerage table | Quotes via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
+        <p>Portfolio Dashboard &copy; 2026 — Data extracted from the brokerage table | Quotes via <a
+                href="https://brapi.dev" target="_blank">brapi.dev</a></p>
     </footer>
 
     <script src="dashboard.js"></script>
 </body>
+
 </html>

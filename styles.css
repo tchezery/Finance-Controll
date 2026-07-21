@@ -282,6 +282,42 @@ body {
 .alloc-name { flex-grow: 1; color: var(--text-primary); font-weight: 500; }
 .alloc-value { font-weight: 600; color: var(--text-primary); }
 
+/* Navigation */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.nav-tab:hover {
+    color: var(--text-primary);
+    background: rgba(118, 118, 128, 0.08);
+}
+
+.nav-tab.active {
+    background: var(--accent-primary);
+    color: #fff;
+    box-shadow: 0 4px 12px var(--accent-primary-glow);
+}
+
 /* Table */
 .holdings-section {
     margin-bottom: 32px;
@@ -313,6 +349,22 @@ body {
 
 .table-wrapper {
     overflow-x: auto;
+}
+
+.value-cell {
+    text-align: right !important;
+}
+
+.modern-select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
 }
 
 .holdings-table {
@@ -388,6 +440,22 @@ body {
 .change-positive { color: var(--accent-green); }
 .change-negative { color: var(--accent-red); }
 
+.trade-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+.trade-buy {
+    background: rgba(52, 199, 89, 0.15);
+    color: var(--accent-green);
+}
+.trade-sell {
+    background: rgba(255, 59, 48, 0.15);
+    color: var(--accent-red);
+}
+
 /* Footer */
 .footer {
     text-align: center;
@@ -400,6 +468,60 @@ body {
 .footer a {
     color: var(--text-primary);
     text-decoration: underline;
+}
+
+/* Asset Analysis Controls */
+.styled-select {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.styled-select:focus {
+    border-color: var(--accent-primary);
+}
+
+.multi-select-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 80px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+.multi-select-container::-webkit-scrollbar {
+    width: 4px;
+}
+.multi-select-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+    border-radius: 4px;
+}
+
+.ticker-pill {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.ticker-pill:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+.ticker-pill.active {
+    background-color: rgba(99, 102, 241, 0.15);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
 }
 
 /* Responsive Design */

@@ -3,12 +3,17 @@ import json
 import re
 from collections import defaultdict
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ==========================================
 # CONFIGURATION & MAPPINGS
 # ==========================================
 
-SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPqraz9JBVRY6KsRI3kqzusZZcKFruYCKsRnHvaVjqIhd_gY962XiH1viMgt8fLfCS3kQieDNky4Rt/pub?output=csv'
+SHEETS_URL = os.getenv('SHEETS_URL')
 
 OUTPUT_JSON = 'portfolio_data.json'
 

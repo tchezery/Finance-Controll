@@ -8,6 +8,10 @@ let PORTFOLIO_DATA = null;
 let currentQuotes = {};
 let activeFilter = 'all';
 let chartInstances = {};
+let historicalDataCache = {};
+let assetAnalysisInitialized = false;
+let activeSingleAsset = '';
+let activeMultiAssets = new Set();
 
 // ---- Load portfolio data from JSON ----
 async function loadPortfolioData() {
@@ -129,6 +133,11 @@ function updateDashboard() {
     renderHoldingsBarChart();
     renderPerformanceChart();
     renderTradesTimeline();
+
+    if (!assetAnalysisInitialized) {
+        initAssetAnalysisControls();
+        assetAnalysisInitialized = true;
+    }
 }
 
 // ---- KPIs ----
@@ -484,17 +493,386 @@ function renderTradesTimeline() {
     });
 }
 
-document.querySelectorAll('.filter-tab').forEach(tab => {
+// ---- Tab & Filter Interactions ----
+
+// Nav Tabs Logic
+document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const targetView = tab.dataset.view;
+        if (targetView === 'dashboardView') {
+            document.getElementById('dashboardView').style.display = 'block';
+            document.getElementById('historyView').style.display = 'none';
+        } else {
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('historyView').style.display = 'block';
+            renderFullHistoryTable();
+        }
+    });
+});
+
+// Holdings Filter
+document.querySelectorAll('.holdings-section:first-of-type .filter-tabs .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const siblings = tab.parentElement.querySelectorAll('.filter-tab');
+        siblings.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         activeFilter = tab.dataset.filter;
         renderHoldingsTable();
     });
 });
 
+// History Filter
+let activeHistoryFilter = 'all';
+let activeHistoryTicker = 'all';
+let activeHistoryPeriod = 'all';
+
+document.querySelectorAll('#historyFilterTabs .filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const siblings = tab.parentElement.querySelectorAll('.filter-tab');
+        siblings.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        activeHistoryFilter = tab.dataset.filter;
+        renderFullHistoryTable();
+    });
+});
+
+const periodSelect = document.getElementById('historyPeriodFilter');
+if (periodSelect) {
+    periodSelect.addEventListener('change', (e) => {
+        activeHistoryPeriod = e.target.value;
+        renderFullHistoryTable();
+    });
+}
+
+function initHistoryFilters() {
+    const select = document.getElementById('historyTickerFilter');
+    if (!select) return;
+    
+    // Get unique tickers
+    const tickers = [...new Set(PORTFOLIO_DATA.trades.map(t => t.ticker))].sort();
+    tickers.forEach(t => {
+        select.innerHTML += `<option value="${t}">${t}</option>`;
+    });
+    
+    select.addEventListener('change', (e) => {
+        activeHistoryTicker = e.target.value;
+        renderFullHistoryTable();
+    });
+}
+
+// ---- History Table Render ----
+function renderFullHistoryTable() {
+    const tbody = document.getElementById('fullHistoryBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    let trades = [...PORTFOLIO_DATA.trades];
+    // Sort by date descending
+    trades.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (activeHistoryFilter !== 'all') {
+        trades = trades.filter(t => t.side === activeHistoryFilter);
+    }
+    if (activeHistoryTicker !== 'all') {
+        trades = trades.filter(t => t.ticker === activeHistoryTicker);
+    }
+    if (activeHistoryPeriod !== 'all') {
+        const now = new Date();
+        let cutoff = new Date(0);
+        if (activeHistoryPeriod === '30') cutoff = new Date(now.setDate(now.getDate() - 30));
+        else if (activeHistoryPeriod === '180') cutoff = new Date(now.setMonth(now.getMonth() - 6));
+        else if (activeHistoryPeriod === '365') cutoff = new Date(now.setFullYear(now.getFullYear() - 1));
+        else if (activeHistoryPeriod === 'ytd') cutoff = new Date(new Date().getFullYear(), 0, 1);
+        
+        trades = trades.filter(t => new Date(t.date) >= cutoff);
+    }
+    
+    trades.forEach(t => {
+        const tr = document.createElement('tr');
+        const isCompra = t.side === 'C';
+        const typeBadge = isCompra ? '<span class="trade-badge trade-buy">Compra</span>' : '<span class="trade-badge trade-sell">Venda</span>';
+        const categoryClass = t.category === 'FII' ? 'fii' : t.category === 'Ações' ? 'acoes' : 'bdr';
+        
+        const dateParts = t.date.split('-');
+        const dateFormatted = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        
+        tr.innerHTML = `
+            <td>${dateFormatted}</td>
+            <td><strong>${t.ticker}</strong></td>
+            <td><span class="category-badge ${categoryClass}">${t.category}</span></td>
+            <td>${typeBadge}</td>
+            <td class="value-cell">${t.qty}</td>
+            <td class="value-cell">${formatCurrency(t.price)}</td>
+            <td class="value-cell"><strong>${formatCurrency(t.value)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+
+// ---- Asset Analysis Charts ----
+async function fetchHistoricalData(ticker) {
+    if (historicalDataCache[ticker]) return historicalDataCache[ticker];
+    try {
+        const resp = await fetch(`/api/history/${ticker}`);
+        const data = await resp.json();
+        if (data && data.length > 0) {
+            historicalDataCache[ticker] = data;
+            return historicalDataCache[ticker];
+        }
+    } catch (e) { console.error("Error fetching historical for", ticker, e); }
+    return [];
+}
+
+async function renderSingleAssetChart(ticker) {
+    if (!ticker) return;
+    const history = await fetchHistoricalData(ticker);
+    if (!history || history.length === 0) return;
+    
+    destroyChart('singleAsset');
+    const ctx = document.getElementById('singleAssetChart').getContext('2d');
+    
+    const labels = history.map(d => new Date(d.date * 1000).toLocaleDateString('pt-BR'));
+    const prices = history.map(d => d.close);
+    
+    const trades = PORTFOLIO_DATA.trades.filter(t => t.ticker === ticker);
+    const buyPoints = [];
+    const sellPoints = [];
+    const buyMeta = [];
+    const sellMeta = [];
+    
+    history.forEach((h, i) => {
+        const hDate = new Date(h.date * 1000).toISOString().split('T')[0];
+        const dayTrades = trades.filter(t => t.date === hDate);
+        let bought = false;
+        let sold = false;
+        let totalBuyQty = 0, totalBuyVal = 0;
+        let totalSellQty = 0, totalSellVal = 0;
+        
+        dayTrades.forEach(t => { 
+            if (t.side === 'C') { bought = true; totalBuyQty += t.qty; totalBuyVal += t.value; }
+            else if (t.side === 'V') { sold = true; totalSellQty += t.qty; totalSellVal += t.value; }
+        });
+        
+        buyPoints.push(bought ? h.close : null);
+        sellPoints.push(sold ? h.close : null);
+        buyMeta.push(bought ? { qty: totalBuyQty, val: totalBuyVal } : null);
+        sellMeta.push(sold ? { qty: totalSellQty, val: totalSellVal } : null);
+    });
+
+    chartInstances['singleAsset'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    type: 'scatter',
+                    label: 'Compras',
+                    data: buyPoints,
+                    backgroundColor: '#10b981',
+                    pointRadius: ctx => ctx.raw ? 6 : 0,
+                    pointHoverRadius: 8,
+                    order: 1
+                },
+                {
+                    type: 'scatter',
+                    label: 'Vendas',
+                    data: sellPoints,
+                    backgroundColor: '#ef4444',
+                    pointRadius: ctx => ctx.raw ? 6 : 0,
+                    pointHoverRadius: 8,
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: 'Preço (R$)',
+                    data: prices,
+                    borderColor: '#6366f1',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    order: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { 
+                tooltip: { 
+                    ...tooltipConfig,
+                    callbacks: {
+                        label: ctx => {
+                            if (ctx.dataset.label === 'Compras') {
+                                const meta = buyMeta[ctx.dataIndex];
+                                if (meta) return [`Comprado: ${meta.qty} cotas`, `Total: ${formatCurrency(meta.val)}`];
+                            } else if (ctx.dataset.label === 'Vendas') {
+                                const meta = sellMeta[ctx.dataIndex];
+                                if (meta) return [`Vendido: ${meta.qty} cotas`, `Total: ${formatCurrency(meta.val)}`];
+                            }
+                            return `Preço: ${formatCurrency(ctx.raw)}`;
+                        }
+                    }
+                } 
+            },
+            scales: { x: { ticks: { maxTicksLimit: 10, font: {size: 10} } }, y: { ticks: { font: {size: 11} } } }
+        }
+    });
+}
+
+async function renderMultiAssetChart() {
+    if (activeMultiAssets.size === 0) {
+        destroyChart('multiAsset');
+        return;
+    }
+    
+    const datasets = [];
+    const ArrayAssets = Array.from(activeMultiAssets);
+    
+    // 1. Fetch all data and gather unique dates
+    const allData = {};
+    let uniqueDatesMap = new Map(); // timestamp -> formatted date
+    
+    for (let i = 0; i < ArrayAssets.length; i++) {
+        const ticker = ArrayAssets[i];
+        const history = await fetchHistoricalData(ticker);
+        if (!history || history.length === 0) continue;
+        
+        allData[ticker] = history;
+        history.forEach(h => {
+            // Use timestamp at start of day to normalize
+            const d = new Date(h.date * 1000);
+            d.setHours(0,0,0,0);
+            uniqueDatesMap.set(d.getTime(), d.toLocaleDateString('pt-BR'));
+        });
+    }
+    
+    // 2. Sort timestamps
+    const sortedTimestamps = Array.from(uniqueDatesMap.keys()).sort((a, b) => a - b);
+    const globalLabels = sortedTimestamps.map(ts => uniqueDatesMap.get(ts));
+    
+    // 3. Build datasets aligned to global labels
+    for (let i = 0; i < ArrayAssets.length; i++) {
+        const ticker = ArrayAssets[i];
+        const history = allData[ticker];
+        if (!history) continue;
+        
+        // Create a map of timestamp -> price for this ticker
+        const priceMap = new Map();
+        history.forEach(h => {
+            const d = new Date(h.date * 1000);
+            d.setHours(0,0,0,0);
+            priceMap.set(d.getTime(), h.close);
+        });
+        
+        const firstValid = history.find(h => h.close > 0)?.close || 1;
+        const normalized = [];
+        let lastKnown = null;
+        
+        sortedTimestamps.forEach(ts => {
+            if (priceMap.has(ts)) {
+                lastKnown = priceMap.get(ts);
+            }
+            if (lastKnown !== null) {
+                normalized.push(((lastKnown - firstValid) / firstValid) * 100);
+            } else {
+                normalized.push(null);
+            }
+        });
+        
+        datasets.push({
+            label: ticker,
+            data: normalized,
+            borderColor: getTickerColor(i),
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.1,
+            spanGaps: true
+        });
+    }
+    
+    destroyChart('multiAsset');
+    const ctx = document.getElementById('multiAssetChart').getContext('2d');
+    
+    chartInstances['multiAsset'] = new Chart(ctx, {
+        type: 'line',
+        data: { labels: globalLabels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%` } } },
+            scales: { x: { ticks: { maxTicksLimit: 10, font: {size: 10} } }, y: { ticks: { font: {size: 11}, callback: v => `${v}%` } } }
+        }
+    });
+}
+
+function initAssetAnalysisControls() {
+    const tickers = PORTFOLIO_DATA.holdings.map(h => h.ticker).sort();
+    
+    const singleSelect = document.getElementById('singleAssetSelect');
+    singleSelect.innerHTML = '<option value="">Selecione um ativo...</option>';
+    tickers.forEach(t => {
+        singleSelect.innerHTML += `<option value="${t}">${t}</option>`;
+    });
+    
+    singleSelect.addEventListener('change', (e) => {
+        activeSingleAsset = e.target.value;
+        renderSingleAssetChart(activeSingleAsset);
+    });
+    
+    const multiDropdown = document.getElementById('multiAssetDropdown');
+    multiDropdown.innerHTML = '<option value="">+ Adicionar ativo</option>';
+    tickers.forEach(t => {
+        multiDropdown.innerHTML += `<option value="${t}">${t}</option>`;
+    });
+
+    const multiContainer = document.getElementById('multiAssetSelectContainer');
+    
+    function renderPills() {
+        multiContainer.innerHTML = '';
+        activeMultiAssets.forEach(t => {
+            const pill = document.createElement('div');
+            pill.className = 'ticker-pill active';
+            pill.innerHTML = `${t} <span style="margin-left: 6px; font-weight: bold; font-size: 14px;">&times;</span>`;
+            pill.addEventListener('click', () => {
+                activeMultiAssets.delete(t);
+                renderPills();
+                renderMultiAssetChart();
+            });
+            multiContainer.appendChild(pill);
+        });
+    }
+
+    multiDropdown.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val && !activeMultiAssets.has(val)) {
+            activeMultiAssets.add(val);
+            renderPills();
+            renderMultiAssetChart();
+        }
+        e.target.value = ''; // Reset dropdown after selection
+    });
+    
+    if (tickers.length > 0) {
+        singleSelect.value = tickers[0];
+        activeSingleAsset = tickers[0];
+        renderSingleAssetChart(tickers[0]);
+        
+        // Pre-select for multi-asset comparison
+        activeMultiAssets.add(tickers[0]);
+        if (tickers.length > 1) activeMultiAssets.add(tickers[1]);
+        if (tickers.length > 2) activeMultiAssets.add(tickers[2]);
+        
+        renderPills();
+        renderMultiAssetChart();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (await loadPortfolioData()) {
+        initHistoryFilters();
         await fetchQuotes();
     }
 });
