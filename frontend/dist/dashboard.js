@@ -992,6 +992,13 @@ function populatePortfolioForm(id) {
             }
             if (btn)
                 btn.style.display = 'inline-block';
+            const shareBtn = document.getElementById('sharePortfolioBtn');
+            if (shareBtn && !p.is_followed) {
+                shareBtn.style.display = 'inline-block';
+            }
+            else if (shareBtn) {
+                shareBtn.style.display = 'none'; // Can't share a portfolio you're just following
+            }
         }
     }
     else {
@@ -1006,6 +1013,9 @@ function populatePortfolioForm(id) {
             sellInput.value = '';
         if (btn)
             btn.style.display = 'none';
+        const shareBtn = document.getElementById('sharePortfolioBtn');
+        if (shareBtn)
+            shareBtn.style.display = 'none';
     }
 }
 async function checkAuthState() {
@@ -1033,7 +1043,8 @@ async function checkAuthState() {
                 if (currentPortfolios.length > 0) {
                     headerSelect.style.display = 'inline-block';
                     currentPortfolios.forEach(p => {
-                        headerSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                        const name = p.is_followed ? `${p.name} (Shared)` : p.name;
+                        headerSelect.innerHTML += `<option value="${p.id}">${name}</option>`;
                     });
                     headerSelect.value = activePortfolioId;
                 }
@@ -1044,13 +1055,17 @@ async function checkAuthState() {
             // Profile Editor Selector
             const profileSelect = document.getElementById('profilePortfolioSelect');
             if (profileSelect) {
-                profileSelect.innerHTML = '';
+                profileSelect.innerHTML = '<option value="">-- Select --</option>';
                 currentPortfolios.forEach(p => {
-                    profileSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                    const name = p.is_followed ? `${p.name} (Shared)` : p.name;
+                    profileSelect.innerHTML += `<option value="${p.id}">${name}</option>`;
                 });
                 if (activePortfolioId) {
                     profileSelect.value = activePortfolioId;
                     populatePortfolioForm(activePortfolioId);
+                }
+                else {
+                    populatePortfolioForm(null);
                 }
             }
             if (user.refresh_interval !== undefined) {
@@ -1198,6 +1213,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else {
             showToast('Failed to delete portfolio', 'error');
+        }
+    });
+    document.getElementById('followPortfolioBtn')?.addEventListener('click', async () => {
+        const tokenInput = document.getElementById('followTokenInput');
+        const token = tokenInput.value.trim();
+        if (!token)
+            return showToast('Please enter a share token', 'error');
+        const res = await fetch('/api/portfolios/follow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ share_token: token })
+        });
+        if (res.ok) {
+            showToast('Portfolio followed successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
+        }
+        else {
+            const err = await res.json();
+            showToast(err.message || err.error || 'Failed to follow portfolio', 'error');
+        }
+    });
+    document.getElementById('sharePortfolioBtn')?.addEventListener('click', async () => {
+        const profileSelect = document.getElementById('profilePortfolioSelect');
+        const id = profileSelect ? profileSelect.value : null;
+        if (!id)
+            return;
+        const res = await fetch(`/api/portfolios/${id}/share`, { method: 'POST' });
+        if (res.ok) {
+            const data = await res.json();
+            navigator.clipboard.writeText(data.share_token).then(() => {
+                showToast('Share token copied to clipboard!', 'success');
+            }).catch(() => {
+                showToast(`Share token: ${data.share_token}`, 'success');
+            });
+        }
+        else {
+            showToast('Failed to generate share token', 'error');
         }
     });
     document.getElementById('saveSettingsBtn').addEventListener('click', async () => {

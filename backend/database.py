@@ -40,7 +40,17 @@ def init_db():
                     user_id INT REFERENCES users(id) ON DELETE CASCADE,
                     name VARCHAR(255) NOT NULL,
                     sheet_url TEXT NOT NULL,
-                    column_mappings TEXT
+                    column_mappings TEXT,
+                    share_token VARCHAR(255) UNIQUE
+                )
+            ''')
+            
+            # Followed Portfolios table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS followed_portfolios (
+                    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+                    portfolio_id INT REFERENCES portfolios(id) ON DELETE CASCADE,
+                    PRIMARY KEY (user_id, portfolio_id)
                 )
             ''')
 
@@ -55,6 +65,10 @@ def init_db():
                 cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = %s", (col,))
                 if not cursor.fetchone():
                     cursor.execute(f"ALTER TABLE users ADD COLUMN {col} {col_type}")
+                    
+            cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'portfolios' AND column_name = 'share_token'")
+            if not cursor.fetchone():
+                cursor.execute("ALTER TABLE portfolios ADD COLUMN share_token VARCHAR(255) UNIQUE")
             
             # Perform Migration: Move legacy sheet_url to portfolios table for users who don't have portfolios yet
             cursor.execute("SELECT id, sheet_url, column_mappings FROM users WHERE sheet_url IS NOT NULL AND sheet_url != ''")
@@ -116,16 +130,39 @@ def update_user_settings(user_id, refresh_interval, theme, default_chart_period=
 def get_user_portfolios(user_id):
     conn = get_db_connection()
     with conn.cursor() as cursor:
-        cursor.execute('SELECT * FROM portfolios WHERE user_id = %s ORDER BY id ASC', (user_id,))
-        portfolios = cursor.fetchall()
+        # Owned portfolios
+        cursor.execute("SELECT *, false as is_followed FROM portfolios WHERE user_id = %s", (user_id,))
+        owned = cursor.fetchall()
+        
+        # Followed portfolios
+        cursor.execute("""
+            SELECT p.*, true as is_followed 
+            FROM portfolios p
+            JOIN followed_portfolios f ON p.id = f.portfolio_id
+            WHERE f.user_id = %s
+        """, (user_id,))
+        followed = cursor.fetchall()
+        
+        portfolios = owned + followed
+        portfolios.sort(key=lambda x: x['id'])
     conn.close()
     return portfolios
 
 def get_portfolio(portfolio_id, user_id):
     conn = get_db_connection()
     with conn.cursor() as cursor:
+        # Check if owned
         cursor.execute('SELECT * FROM portfolios WHERE id = %s AND user_id = %s', (portfolio_id, user_id))
         portfolio = cursor.fetchone()
+        if not portfolio:
+            # Check if followed
+            cursor.execute('''
+                SELECT p.* 
+                FROM portfolios p
+                JOIN followed_portfolios f ON p.id = f.portfolio_id
+                WHERE p.id = %s AND f.user_id = %s
+            ''', (portfolio_id, user_id))
+            portfolio = cursor.fetchone()
     conn.close()
     return portfolio
 
@@ -162,7 +199,8 @@ def delete_portfolio(portfolio_id, user_id):
     conn = get_db_connection()
     conn.autocommit = True
     with conn.cursor() as cursor:
-        cursor.execute('DELETE FROM portfolios WHERE id = %s AND user_id = %s', (portfolio_id, user_id))
+        cursor.execute("DELETE FROM portfolios WHERE id = %s AND user_id = %s RETURNING id", (portfolio_id, user_id))
+        deleted = cursor.fetchone()
         
         # If they deleted their active portfolio, fallback to the first one available or null
         cursor.execute('SELECT active_portfolio_id FROM users WHERE id = %s', (user_id,))
@@ -183,6 +221,46 @@ def set_active_portfolio(user_id, portfolio_id):
         if cursor.fetchone():
             cursor.execute('UPDATE users SET active_portfolio_id = %s WHERE id = %s', (portfolio_id, user_id))
     conn.close()
+
+def generate_share_token(portfolio_id, user_id):
+    import uuid
+    token = str(uuid.uuid4())
+    conn = get_db_connection()
+    conn.autocommit = True
+    with conn.cursor() as cursor:
+        cursor.execute("UPDATE portfolios SET share_token = %s WHERE id = %s AND user_id = %s RETURNING share_token", 
+                       (token, portfolio_id, user_id))
+        res = cursor.fetchone()
+    conn.close()
+    return res['share_token'] if res else None
+
+def get_portfolio_by_token(token):
+    conn = get_db_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM portfolios WHERE share_token = %s", (token,))
+        p = cursor.fetchone()
+    conn.close()
+    return p
+
+def follow_portfolio(user_id, token):
+    p = get_portfolio_by_token(token)
+    if not p:
+        return None
+    
+    if p['user_id'] == user_id:
+        return p # Can't follow your own, but just return it as success
+        
+    conn = get_db_connection()
+    conn.autocommit = True
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("INSERT INTO followed_portfolios (user_id, portfolio_id) VALUES (%s, %s) ON CONFLICT DO NOTHING", (user_id, p['id']))
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+        
+    return p
 
 # Initialize DB on import
 init_db()

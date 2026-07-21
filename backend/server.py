@@ -137,6 +137,30 @@ def delete_portfolio(portfolio_id):
     database.delete_portfolio(portfolio_id, user_id)
     return jsonify({"success": True})
 
+@app.route('/api/portfolios/<int:portfolio_id>/share', methods=['POST'])
+def share_portfolio(portfolio_id):
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    token = database.generate_share_token(portfolio_id, user_id)
+    if not token:
+        return jsonify({"error": "Portfolio not found or permission denied"}), 403
+    return jsonify({"success": True, "share_token": token})
+
+@app.route('/api/portfolios/follow', methods=['POST'])
+def follow_portfolio():
+    user_id = session.get('user_id')
+    if not user_id: return jsonify({"error": "Not logged in"}), 401
+    
+    token = request.json.get('share_token')
+    if not token: return jsonify({"error": "Share token is required"}), 400
+    
+    p = database.follow_portfolio(user_id, token)
+    if not p:
+        return jsonify({"error": "Invalid share token"}), 404
+        
+    return jsonify({"success": True, "portfolio": p})
+
 @app.route('/api/user/active_portfolio', methods=['POST'])
 def set_active_portfolio():
     user_id = session.get('user_id')
@@ -225,6 +249,30 @@ def get_portfolio_data():
         return jsonify({"error": "Failed to fetch data from Google Sheets"}), 500
     
     dashboard_data = build_portfolio(trades)
+    return jsonify(dashboard_data)
+
+@app.route('/api/shared/<token>', methods=['GET'])
+def get_shared_portfolio_data(token):
+    portfolio = database.get_portfolio_by_token(token)
+    if not portfolio:
+        return jsonify({"error": "NOT_FOUND", "message": "Invalid or expired share link."}), 404
+        
+    url = portfolio['sheet_url']
+    mappings_str = portfolio.get('column_mappings')
+    mappings = json.loads(mappings_str) if mappings_str else None
+
+    trades = extract_trades(url, mappings)
+    if not trades:
+        return jsonify({"error": "Failed to fetch data from Google Sheets"}), 500
+    
+    dashboard_data = build_portfolio(trades)
+    
+    # Return user's name to display in UI (optional, for "John's Portfolio")
+    # We don't have user's name in portfolio directly, let's fetch it
+    user = database.get_user_by_id(portfolio['user_id'])
+    dashboard_data['shared_by'] = user['name'] if user else 'Unknown User'
+    dashboard_data['portfolio_name'] = portfolio['name']
+    
     return jsonify(dashboard_data)
 
 @app.route('/api/history/<ticker>', methods=['GET'])
