@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+finance_controll.db
+client_secret_*.json

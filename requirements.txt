@@ -2,3 +2,6 @@ Flask==3.0.3
 gunicorn==22.0.0
 pandas==2.2.2
 python-dotenv==1.0.1
+google-auth==2.30.0
+requests==2.32.3
+Flask-Session==0.8.0

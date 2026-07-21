@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -33,9 +34,24 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="status-badge loading" id="statusBadge">
+                <div id="authContainer" style="display: flex; align-items: center; gap: 12px;">
+                    <!-- Google Sign-In button container -->
+                    <div id="g_id_onload"
+                         data-client_id="876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com"
+                         data-callback="handleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+                    <div class="g_id_signin" data-type="standard" data-theme="filled_blue"></div>
+                </div>
+                <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
+                    <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
+                    <button id="settingsBtn" class="nav-tab">Settings</button>
+                    <button id="logoutBtn" class="nav-tab">Logout</button>
+                </div>
+                
+                <div class="status-badge">
                     <span class="status-dot"></span>
-                    <span id="statusText">Loading quotas...</span>
+                    <span id="updateTime">Loading quotes...</span>
                 </div>
                 <div class="last-update" id="lastUpdate"></div>
             </div>
@@ -203,7 +219,7 @@
                             <!-- Pills will be injected here -->
                         </div>
                     </div>
-                    <div class="chart-container" style="height: 240px; margin-top: 10px;">
+                    <div class="chart-container" style="margin-top: 10px;">
                         <canvas id="multiAssetChart"></canvas>
                     </div>
                 </div>
@@ -308,6 +324,25 @@
             </section>
         </div> <!-- End History View -->
     </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="chart-card" style="width: 400px; max-width: 90%; position: relative;">
+            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 16px -16px; color: #fff;">
+                <h2 class="chart-title" style="color: #fff; margin: 0;">Settings</h2>
+                <button id="closeSettingsBtn" style="background: #c0c0c0; border: none; box-shadow: var(--win-outset); font-weight: bold; cursor: pointer; padding: 2px 6px;">X</button>
+            </div>
+            
+            <p style="font-size: 13px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):</p>
+            <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here.</p>
+            
+            <input type="text" id="sheetUrlInput" class="styled-select" style="width: 100%; margin-bottom: 16px; box-sizing: border-box;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button id="saveSettingsBtn" class="nav-tab">Save & Sync</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

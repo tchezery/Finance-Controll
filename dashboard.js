@@ -915,16 +915,108 @@ function initChartPeriodFilters() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+// ==========================================
+// Authentication & Settings
+// ==========================================
+
+async function handleCredentialResponse(response) {
+    try {
+        const res = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+        if (data.success) {
+            checkAuthState();
+        } else {
+            alert('Login failed');
+        }
+    } catch (e) {
+        console.error("Login request failed", e);
+    }
+}
+
+// Make handleCredentialResponse available globally for Google Identity callback
+window.handleCredentialResponse = handleCredentialResponse;
+
+async function checkAuthState() {
+    try {
+        const res = await fetch('/api/user');
+        if (res.ok) {
+            const user = await res.json();
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'flex';
+            document.getElementById('userName').textContent = user.name;
+            
+            if (user.sheet_url) {
+                document.getElementById('sheetUrlInput').value = user.sheet_url;
+                document.getElementById('settingsModal').style.display = 'none';
+                startDashboard();
+            } else {
+                document.getElementById('settingsModal').style.display = 'flex';
+            }
+        } else {
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('userProfile').style.display = 'none';
+            document.getElementById('updateTime').textContent = 'Please log in';
+        }
+    } catch (e) {
+        console.error("Auth check failed", e);
+    }
+}
+
+let dashboardStarted = false;
+async function startDashboard() {
+    if (dashboardStarted) return;
+    document.getElementById('updateTime').textContent = 'Loading quotes...';
     if (await loadPortfolioData()) {
+        dashboardStarted = true;
         initHistoryFilters();
         initChartPeriodFilters();
         await fetchQuotes();
         
-        // Auto-update quotes every 3 minutes
         setInterval(async () => {
             console.log("Auto-updating quotes...");
             await fetchQuotes();
         }, 3 * 60 * 1000);
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Auth listeners
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await fetch('/api/logout', { method: 'POST' });
+        location.reload();
+    });
+
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+        document.getElementById('settingsModal').style.display = 'flex';
+    });
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+        document.getElementById('settingsModal').style.display = 'none';
+    });
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+        const url = document.getElementById('sheetUrlInput').value;
+        if (!url) return alert('Please enter a Google Sheets CSV URL');
+        
+        const res = await fetch('/api/user/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sheet_url: url })
+        });
+        
+        if (res.ok) {
+            document.getElementById('settingsModal').style.display = 'none';
+            dashboardStarted = false; // force reload
+            startDashboard();
+        } else {
+            alert('Failed to save settings');
+        }
+    });
+
+    // Initial Check
+    checkAuthState();
 });
