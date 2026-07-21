@@ -4,17 +4,19 @@ A sleek and modern web application to manage and analyze your investment portfol
 
 ## Features
 
+- **Multiple Portfolios**: Create and manage multiple distinct investment portfolios from different Google Sheets.
+- **Portfolio Sharing**: Generate a unique token to share your portfolio, or follow your friends' portfolios and seamlessly switch between them directly in your dashboard.
 - **Dashboard**: Get a clear overview of your current holdings, asset allocation, and overall portfolio performance.
 - **Dynamic Charts**: Interactive visualizations to track monthly evolution and individual asset historical prices.
 - **Trade History**: Detailed table view of all your buy and sell operations.
-- **Customizable Themes**: Choose from multiple built-in color themes to personalize your experience.
+- **Customizable**: Choose from multiple built-in color themes, define custom Buy/Sell indicators (e.g. `1` and `0` instead of `C` and `V`), and set custom data mapping rules.
 - **Google Sheets Integration**: Seamlessly connect your public Google Spreadsheet (via CSV export) as your central database. 
 
 ## Tech Stack
 
 - **Backend**: Python (Flask)
-- **Frontend**: HTML5, CSS3, TypeScript
-- **Database**: SQLite (for user preferences and auth state)
+- **Frontend**: HTML5, Vanilla CSS, TypeScript
+- **Database**: PostgreSQL (Neon/Render) for robust multi-user session and portfolio tracking.
 - **Authentication**: Google OAuth
 
 ## Setup & Installation
