@@ -40,6 +40,7 @@ TITLE_TO_TICKER = {
     'GERDAU PN': 'GGBR4',
     'APPLE DRN': 'AAPL34',
     'AMAZON DRN': 'AMZO34',
+    'GOOGLE DRN': 'GOGL34',
 }
 
 # ==========================================
