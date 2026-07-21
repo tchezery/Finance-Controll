@@ -1,0 +1,1686 @@
+{
+  "holdings": [
+    {
+      "ticker": "AAPL34",
+      "category": "BDR",
+      "quotas": 3.0,
+      "avgPrice": 64.22,
+      "buyValue": 192.65,
+      "sellValue": 0,
+      "totalBuys": 3.0,
+      "totalSells": 0,
+      "trades": 2
+    },
+    {
+      "ticker": "BTCI11",
+      "category": "FII",
+      "quotas": 136.0,
+      "avgPrice": 9.29,
+      "buyValue": 1263.39,
+      "sellValue": 0,
+      "totalBuys": 136.0,
+      "totalSells": 0,
+      "trades": 15
+    },
+    {
+      "ticker": "BTLG11",
+      "category": "FII",
+      "quotas": 4.0,
+      "avgPrice": 102.39,
+      "buyValue": 409.55,
+      "sellValue": 0,
+      "totalBuys": 4.0,
+      "totalSells": 0,
+      "trades": 2
+    },
+    {
+      "ticker": "FGAA11",
+      "category": "FII",
+      "quotas": 143.0,
+      "avgPrice": 8.59,
+      "buyValue": 1229.03,
+      "sellValue": 0,
+      "totalBuys": 143.0,
+      "totalSells": 0,
+      "trades": 16
+    },
+    {
+      "ticker": "GARE11",
+      "category": "FII",
+      "quotas": 251.0,
+      "avgPrice": 8.71,
+      "buyValue": 2186.5,
+      "sellValue": 0,
+      "totalBuys": 251.0,
+      "totalSells": 0,
+      "trades": 20
+    },
+    {
+      "ticker": "HSML11",
+      "category": "FII",
+      "quotas": 14.0,
+      "avgPrice": 87.18,
+      "buyValue": 1220.48,
+      "sellValue": 0,
+      "totalBuys": 14.0,
+      "totalSells": 0,
+      "trades": 9
+    },
+    {
+      "ticker": "MXRF11",
+      "category": "FII",
+      "quotas": 199.0,
+      "avgPrice": 9.69,
+      "buyValue": 1928.78,
+      "sellValue": 0,
+      "totalBuys": 199.0,
+      "totalSells": 0,
+      "trades": 17
+    },
+    {
+      "ticker": "PVBI11",
+      "category": "FII",
+      "quotas": 30.0,
+      "avgPrice": 75.94,
+      "buyValue": 2278.24,
+      "sellValue": 0,
+      "totalBuys": 30.0,
+      "totalSells": 0,
+      "trades": 8
+    },
+    {
+      "ticker": "SNAG11",
+      "category": "FII",
+      "quotas": 109.0,
+      "avgPrice": 9.71,
+      "buyValue": 1058.44,
+      "sellValue": 0,
+      "totalBuys": 109.0,
+      "totalSells": 0,
+      "trades": 22
+    },
+    {
+      "ticker": "VGIR11",
+      "category": "FII",
+      "quotas": 121.0,
+      "avgPrice": 9.69,
+      "buyValue": 1172.14,
+      "sellValue": 0,
+      "totalBuys": 121.0,
+      "totalSells": 0,
+      "trades": 16
+    },
+    {
+      "ticker": "XPML11",
+      "category": "FII",
+      "quotas": 13.0,
+      "avgPrice": 106.72,
+      "buyValue": 1387.37,
+      "sellValue": 0,
+      "totalBuys": 13.0,
+      "totalSells": 0,
+      "trades": 4
+    }
+  ],
+  "monthlyEvolution": [
+    {
+      "month": "2024-06",
+      "value": 749.55
+    },
+    {
+      "month": "2024-07",
+      "value": 1046.71
+    },
+    {
+      "month": "2024-08",
+      "value": 1984.07
+    },
+    {
+      "month": "2024-09",
+      "value": 3464.85
+    },
+    {
+      "month": "2024-10",
+      "value": 3845.59
+    },
+    {
+      "month": "2024-12",
+      "value": 3870.19
+    },
+    {
+      "month": "2025-01",
+      "value": 3930.47
+    },
+    {
+      "month": "2025-02",
+      "value": 4575.83
+    },
+    {
+      "month": "2025-05",
+      "value": 6029.72
+    },
+    {
+      "month": "2025-06",
+      "value": 6155.11
+    },
+    {
+      "month": "2025-07",
+      "value": 6657.5
+    },
+    {
+      "month": "2025-08",
+      "value": 6818.95
+    },
+    {
+      "month": "2025-09",
+      "value": 7391.69
+    },
+    {
+      "month": "2025-10",
+      "value": 8475.67
+    },
+    {
+      "month": "2025-11",
+      "value": 9052.74
+    },
+    {
+      "month": "2025-12",
+      "value": 9559.52
+    },
+    {
+      "month": "2026-01",
+      "value": 10148.07
+    },
+    {
+      "month": "2026-02",
+      "value": 10742.19
+    },
+    {
+      "month": "2026-03",
+      "value": 11069.82
+    },
+    {
+      "month": "2026-04",
+      "value": 11740.96
+    },
+    {
+      "month": "2026-05",
+      "value": 12420.73
+    },
+    {
+      "month": "2026-06",
+      "value": 13280.95
+    },
+    {
+      "month": "2026-07",
+      "value": 14347.85
+    }
+  ],
+  "monthlyInvestments": [
+    {
+      "month": "2024-06",
+      "invested": 749.55
+    },
+    {
+      "month": "2024-07",
+      "invested": 297.16
+    },
+    {
+      "month": "2024-08",
+      "invested": 1638.89
+    },
+    {
+      "month": "2024-09",
+      "invested": 1480.78
+    },
+    {
+      "month": "2024-10",
+      "invested": 380.74
+    },
+    {
+      "month": "2024-12",
+      "invested": 24.6
+    },
+    {
+      "month": "2025-01",
+      "invested": 60.28
+    },
+    {
+      "month": "2025-02",
+      "invested": 645.36
+    },
+    {
+      "month": "2025-05",
+      "invested": 2009.77
+    },
+    {
+      "month": "2025-06",
+      "invested": 125.39
+    },
+    {
+      "month": "2025-07",
+      "invested": 502.39
+    },
+    {
+      "month": "2025-08",
+      "invested": 161.45
+    },
+    {
+      "month": "2025-09",
+      "invested": 572.74
+    },
+    {
+      "month": "2025-10",
+      "invested": 1083.98
+    },
+    {
+      "month": "2025-11",
+      "invested": 577.07
+    },
+    {
+      "month": "2025-12",
+      "invested": 506.78
+    },
+    {
+      "month": "2026-01",
+      "invested": 588.55
+    },
+    {
+      "month": "2026-02",
+      "invested": 594.12
+    },
+    {
+      "month": "2026-03",
+      "invested": 327.63
+    },
+    {
+      "month": "2026-04",
+      "invested": 671.14
+    },
+    {
+      "month": "2026-05",
+      "invested": 679.77
+    },
+    {
+      "month": "2026-06",
+      "invested": 860.22
+    },
+    {
+      "month": "2026-07",
+      "invested": 1066.9
+    }
+  ],
+  "trades": [
+    {
+      "date": "2024-06-10",
+      "ticker": "BBDC4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 1.0,
+      "price": 13.0,
+      "value": 13.0
+    },
+    {
+      "date": "2024-06-10",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 1.0,
+      "price": 37.17,
+      "value": 37.17
+    },
+    {
+      "date": "2024-06-10",
+      "ticker": "AAPL34",
+      "category": "BDR",
+      "side": "C",
+      "qty": 1.0,
+      "price": 53.09,
+      "value": 53.09
+    },
+    {
+      "date": "2024-06-10",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 10.19,
+      "value": 20.38
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "AMZO34",
+      "category": "BDR",
+      "side": "C",
+      "qty": 1.0,
+      "price": 49.61,
+      "value": 49.61
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.97,
+      "value": 9.97
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 95.34,
+      "value": 95.34
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.78,
+      "value": 29.34
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "IVVB11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 326.0,
+      "value": 326.0
+    },
+    {
+      "date": "2024-06-17",
+      "ticker": "BOVA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 115.65,
+      "value": 115.65
+    },
+    {
+      "date": "2024-07-23",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 8.57,
+      "value": 85.7
+    },
+    {
+      "date": "2024-07-24",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 10.19,
+      "value": 101.9
+    },
+    {
+      "date": "2024-07-24",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.96,
+      "value": 9.96
+    },
+    {
+      "date": "2024-07-24",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.96,
+      "value": 99.6
+    },
+    {
+      "date": "2024-08-07",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 95.58,
+      "value": 95.58
+    },
+    {
+      "date": "2024-08-07",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 10.01,
+      "value": 100.1
+    },
+    {
+      "date": "2024-08-07",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.89,
+      "value": 98.9
+    },
+    {
+      "date": "2024-08-08",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.52,
+      "value": 8.52
+    },
+    {
+      "date": "2024-08-08",
+      "ticker": "IVVB11",
+      "category": "FII",
+      "side": "V",
+      "qty": 1.0,
+      "price": 328.35,
+      "value": 328.35
+    },
+    {
+      "date": "2024-08-09",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.83,
+      "value": 9.83
+    },
+    {
+      "date": "2024-08-12",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 2.0,
+      "price": 36.8,
+      "value": 73.6
+    },
+    {
+      "date": "2024-08-12",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 9.8,
+      "value": 49.0
+    },
+    {
+      "date": "2024-08-12",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 6.0,
+      "price": 9.04,
+      "value": 54.24
+    },
+    {
+      "date": "2024-08-12",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 10.03,
+      "value": 30.09
+    },
+    {
+      "date": "2024-08-12",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 92.65,
+      "value": 92.65
+    },
+    {
+      "date": "2024-08-15",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.61,
+      "value": 8.61
+    },
+    {
+      "date": "2024-08-20",
+      "ticker": "BBAS3",
+      "category": "Ações",
+      "side": "C",
+      "qty": 4.0,
+      "price": 29.17,
+      "value": 116.68
+    },
+    {
+      "date": "2024-08-20",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 12.0,
+      "price": 8.74,
+      "value": 104.88
+    },
+    {
+      "date": "2024-08-20",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 95.6,
+      "value": 95.6
+    },
+    {
+      "date": "2024-08-20",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.86,
+      "value": 29.58
+    },
+    {
+      "date": "2024-08-20",
+      "ticker": "AMZO34",
+      "category": "BDR",
+      "side": "V",
+      "qty": 1.0,
+      "price": 48.68,
+      "value": 48.68
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "GGBR4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 5.0,
+      "price": 18.38,
+      "value": 91.9
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 10.21,
+      "value": 102.1
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "BTLG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 102.68,
+      "value": 102.68
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "XPML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 111.82,
+      "value": 111.82
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "NDIV11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 116.4,
+      "value": 232.8
+    },
+    {
+      "date": "2024-08-23",
+      "ticker": "NDIV11",
+      "category": "FII",
+      "side": "V",
+      "qty": 2.0,
+      "price": 116.2,
+      "value": 232.4
+    },
+    {
+      "date": "2024-08-26",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.91,
+      "value": 29.73
+    },
+    {
+      "date": "2024-08-27",
+      "ticker": "GGBR4",
+      "category": "Ações",
+      "side": "V",
+      "qty": 5.0,
+      "price": 18.42,
+      "value": 92.1
+    },
+    {
+      "date": "2024-09-13",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 57.0,
+      "price": 8.82,
+      "value": 502.74
+    },
+    {
+      "date": "2024-09-13",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 49.0,
+      "price": 9.95,
+      "value": 487.55
+    },
+    {
+      "date": "2024-09-13",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 49.0,
+      "price": 10.01,
+      "value": 490.49
+    },
+    {
+      "date": "2024-10-15",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 19.0,
+      "price": 8.11,
+      "value": 154.09
+    },
+    {
+      "date": "2024-10-15",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 15.0,
+      "price": 9.23,
+      "value": 138.45
+    },
+    {
+      "date": "2024-10-15",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 9.0,
+      "price": 9.8,
+      "value": 88.2
+    },
+    {
+      "date": "2024-12-13",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 8.2,
+      "value": 24.6
+    },
+    {
+      "date": "2025-01-20",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.16,
+      "value": 9.16
+    },
+    {
+      "date": "2025-01-22",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 6.0,
+      "price": 8.52,
+      "value": 51.12
+    },
+    {
+      "date": "2025-02-14",
+      "ticker": "AAPL34",
+      "category": "BDR",
+      "side": "C",
+      "qty": 2.0,
+      "price": 69.78,
+      "value": 139.56
+    },
+    {
+      "date": "2025-02-14",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 21.0,
+      "price": 8.1,
+      "value": 170.1
+    },
+    {
+      "date": "2025-02-14",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 16.0,
+      "price": 9.0,
+      "value": 144.0
+    },
+    {
+      "date": "2025-02-25",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 5.0,
+      "price": 38.34,
+      "value": 191.7
+    },
+    {
+      "date": "2025-05-08",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "C",
+      "qty": 1.0,
+      "price": 30.58,
+      "value": 30.58
+    },
+    {
+      "date": "2025-05-08",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.69,
+      "value": 96.9
+    },
+    {
+      "date": "2025-05-08",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.29,
+      "value": 27.87
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "BBDC4",
+      "category": "Ações",
+      "side": "V",
+      "qty": 1.0,
+      "price": 15.43,
+      "value": 15.43
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "BBAS3",
+      "category": "Ações",
+      "side": "V",
+      "qty": 4.0,
+      "price": 29.53,
+      "value": 118.12
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "V",
+      "qty": 1.0,
+      "price": 31.81,
+      "value": 31.81
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "V",
+      "qty": 2.0,
+      "price": 31.81,
+      "value": 63.62
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "PETR4",
+      "category": "Ações",
+      "side": "V",
+      "qty": 6.0,
+      "price": 31.82,
+      "value": 190.92
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 9.17,
+      "value": 45.85
+    },
+    {
+      "date": "2025-05-15",
+      "ticker": "BOVA11",
+      "category": "FII",
+      "side": "V",
+      "qty": 1.0,
+      "price": 135.98,
+      "value": 135.98
+    },
+    {
+      "date": "2025-05-19",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 8.7,
+      "value": 43.5
+    },
+    {
+      "date": "2025-05-20",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.87,
+      "value": 8.87
+    },
+    {
+      "date": "2025-05-20",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 8.0,
+      "price": 8.87,
+      "value": 70.96
+    },
+    {
+      "date": "2025-05-20",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 30.0,
+      "price": 8.87,
+      "value": 266.1
+    },
+    {
+      "date": "2025-05-20",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 84.73,
+      "value": 169.46
+    },
+    {
+      "date": "2025-05-22",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 7.0,
+      "price": 9.62,
+      "value": 67.34
+    },
+    {
+      "date": "2025-05-22",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 55.0,
+      "price": 8.85,
+      "value": 486.75
+    },
+    {
+      "date": "2025-05-22",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 69.0,
+      "price": 9.66,
+      "value": 666.54
+    },
+    {
+      "date": "2025-05-23",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.67,
+      "value": 9.67
+    },
+    {
+      "date": "2025-05-28",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.69,
+      "value": 19.38
+    },
+    {
+      "date": "2025-06-13",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.73,
+      "value": 29.19
+    },
+    {
+      "date": "2025-06-23",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.62,
+      "value": 96.2
+    },
+    {
+      "date": "2025-07-07",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.79,
+      "value": 9.79
+    },
+    {
+      "date": "2025-07-07",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 11.0,
+      "price": 9.79,
+      "value": 107.69
+    },
+    {
+      "date": "2025-07-07",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.05,
+      "value": 90.5
+    },
+    {
+      "date": "2025-07-07",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 9.05,
+      "value": 90.5
+    },
+    {
+      "date": "2025-07-14",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.72,
+      "value": 29.16
+    },
+    {
+      "date": "2025-07-14",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 15.0,
+      "price": 9.73,
+      "value": 145.95
+    },
+    {
+      "date": "2025-07-24",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.58,
+      "value": 19.16
+    },
+    {
+      "date": "2025-07-28",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.64,
+      "value": 9.64
+    },
+    {
+      "date": "2025-08-07",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.63,
+      "value": 9.63
+    },
+    {
+      "date": "2025-08-18",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.46,
+      "value": 8.46
+    },
+    {
+      "date": "2025-08-18",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.52,
+      "value": 28.56
+    },
+    {
+      "date": "2025-08-19",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.52,
+      "value": 9.52
+    },
+    {
+      "date": "2025-08-25",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.58,
+      "value": 9.58
+    },
+    {
+      "date": "2025-08-29",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 9.0,
+      "price": 9.57,
+      "value": 86.13
+    },
+    {
+      "date": "2025-08-29",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.57,
+      "value": 9.57
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.55,
+      "value": 8.55
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.6,
+      "value": 9.6
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 8.0,
+      "price": 9.6,
+      "value": 76.8
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 83.24,
+      "value": 83.24
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 83.24,
+      "value": 83.24
+    },
+    {
+      "date": "2025-09-08",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 26.0,
+      "price": 9.58,
+      "value": 249.08
+    },
+    {
+      "date": "2025-09-15",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 8.67,
+      "value": 34.68
+    },
+    {
+      "date": "2025-09-25",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.02,
+      "value": 18.04
+    },
+    {
+      "date": "2025-09-25",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.51,
+      "value": 9.51
+    },
+    {
+      "date": "2025-10-01",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 8.93,
+      "value": 44.65
+    },
+    {
+      "date": "2025-10-01",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 76.11,
+      "value": 228.33
+    },
+    {
+      "date": "2025-10-01",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 76.11,
+      "value": 228.33
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.02,
+      "value": 9.02
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "SNAG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 8.0,
+      "price": 9.61,
+      "value": 76.88
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 83.93,
+      "value": 335.72
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 76.55,
+      "value": 76.55
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.56,
+      "value": 9.56
+    },
+    {
+      "date": "2025-10-07",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.56,
+      "value": 9.56
+    },
+    {
+      "date": "2025-10-20",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 9.45,
+      "value": 47.25
+    },
+    {
+      "date": "2025-10-24",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.79,
+      "value": 8.79
+    },
+    {
+      "date": "2025-10-24",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.34,
+      "value": 9.34
+    },
+    {
+      "date": "2025-11-07",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 75.69,
+      "value": 75.69
+    },
+    {
+      "date": "2025-11-07",
+      "ticker": "XPML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 106.7,
+      "value": 426.8
+    },
+    {
+      "date": "2025-11-14",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 7.0,
+      "price": 9.34,
+      "value": 65.38
+    },
+    {
+      "date": "2025-11-28",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.2,
+      "value": 9.2
+    },
+    {
+      "date": "2025-12-05",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.63,
+      "value": 19.26
+    },
+    {
+      "date": "2025-12-17",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.28,
+      "value": 27.84
+    },
+    {
+      "date": "2025-12-17",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 9.49,
+      "value": 37.96
+    },
+    {
+      "date": "2025-12-23",
+      "ticker": "BTLG11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 102.29,
+      "value": 306.87
+    },
+    {
+      "date": "2025-12-23",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 9.0,
+      "price": 9.57,
+      "value": 86.13
+    },
+    {
+      "date": "2025-12-23",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.57,
+      "value": 19.14
+    },
+    {
+      "date": "2025-12-23",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.58,
+      "value": 9.58
+    },
+    {
+      "date": "2026-01-08",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 50.0,
+      "price": 9.52,
+      "value": 476.0
+    },
+    {
+      "date": "2026-01-15",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 9.28,
+      "value": 37.12
+    },
+    {
+      "date": "2026-01-22",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.86,
+      "value": 8.86
+    },
+    {
+      "date": "2026-01-23",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 9.51,
+      "value": 19.02
+    },
+    {
+      "date": "2026-01-26",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.51,
+      "value": 9.51
+    },
+    {
+      "date": "2026-01-26",
+      "ticker": "MXRF11",
+      "category": "FII",
+      "side": "C",
+      "qty": 4.0,
+      "price": 9.51,
+      "value": 38.04
+    },
+    {
+      "date": "2026-02-06",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 57.0,
+      "price": 8.62,
+      "value": 491.34
+    },
+    {
+      "date": "2026-02-18",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 8.56,
+      "value": 17.12
+    },
+    {
+      "date": "2026-02-18",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 8.56,
+      "value": 42.8
+    },
+    {
+      "date": "2026-02-23",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 8.56,
+      "value": 17.12
+    },
+    {
+      "date": "2026-02-27",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 8.58,
+      "value": 25.74
+    },
+    {
+      "date": "2026-03-06",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 8.48,
+      "value": 25.44
+    },
+    {
+      "date": "2026-03-12",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 30.0,
+      "price": 8.36,
+      "value": 250.8
+    },
+    {
+      "date": "2026-03-13",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 8.43,
+      "value": 42.15
+    },
+    {
+      "date": "2026-03-23",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 9.24,
+      "value": 9.24
+    },
+    {
+      "date": "2026-04-10",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 7.0,
+      "price": 76.66,
+      "value": 536.62
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 6.0,
+      "price": 8.37,
+      "value": 50.22
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "GARE11",
+      "category": "FII",
+      "side": "C",
+      "qty": 10.0,
+      "price": 8.43,
+      "value": 84.3
+    },
+    {
+      "date": "2026-05-08",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 9.0,
+      "price": 75.53,
+      "value": 679.77
+    },
+    {
+      "date": "2026-06-01",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 13.0,
+      "price": 9.28,
+      "value": 120.64
+    },
+    {
+      "date": "2026-06-08",
+      "ticker": "XPML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 106.6,
+      "value": 533.0
+    },
+    {
+      "date": "2026-06-19",
+      "ticker": "BTCI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 6.0,
+      "price": 9.14,
+      "value": 54.84
+    },
+    {
+      "date": "2026-06-29",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 18.0,
+      "price": 8.43,
+      "value": 151.74
+    },
+    {
+      "date": "2026-07-03",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 8.45,
+      "value": 16.9
+    },
+    {
+      "date": "2026-07-08",
+      "ticker": "PVBI11",
+      "category": "FII",
+      "side": "C",
+      "qty": 5.0,
+      "price": 72.06,
+      "value": 360.3
+    },
+    {
+      "date": "2026-07-08",
+      "ticker": "XPML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 105.25,
+      "value": 315.75
+    },
+    {
+      "date": "2026-07-13",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 9.0,
+      "price": 8.29,
+      "value": 74.61
+    },
+    {
+      "date": "2026-07-14",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 86.68,
+      "value": 86.68
+    },
+    {
+      "date": "2026-07-14",
+      "ticker": "VGIR11",
+      "category": "FII",
+      "side": "C",
+      "qty": 3.0,
+      "price": 9.6,
+      "value": 28.8
+    },
+    {
+      "date": "2026-07-16",
+      "ticker": "HSML11",
+      "category": "FII",
+      "side": "C",
+      "qty": 2.0,
+      "price": 87.81,
+      "value": 175.62
+    },
+    {
+      "date": "2026-07-17",
+      "ticker": "FGAA11",
+      "category": "FII",
+      "side": "C",
+      "qty": 1.0,
+      "price": 8.24,
+      "value": 8.24
+    }
+  ],
+  "totalTrades": 152,
+  "lastUpdate": "2026-07-17",
+  "generatedAt": "2026-07-20T22:51:09.013551"
+}
