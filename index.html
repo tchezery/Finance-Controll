@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Dashboard | Investimentos</title>
-    <meta name="description" content="Dashboard interativo para acompanhamento de investimentos na B3">
+    <title>Portfolio Dashboard | Investments</title>
+    <meta name="description" content="Interactive dashboard for monitoring investments on B3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -12,11 +12,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-grid"></div>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-    <div class="bg-glow bg-glow-3"></div>
+    <!-- Background removed for Apple-style minimalist design -->
 
     <!-- Header -->
     <header class="header">
@@ -29,13 +25,13 @@
                 </div>
                 <div>
                     <h1 class="logo-title">Portfolio Dashboard</h1>
-                    <p class="logo-subtitle">Investimentos B3 — Corretagem</p>
+                    <p class="logo-subtitle">B3 Investment — Brokerage</p>
                 </div>
             </div>
             <div class="header-right">
                 <div class="status-badge loading" id="statusBadge">
                     <span class="status-dot"></span>
-                    <span id="statusText">Carregando cotações...</span>
+                    <span id="statusText">Loading quotas...</span>
                 </div>
                 <div class="last-update" id="lastUpdate"></div>
             </div>
@@ -51,9 +47,9 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Valor Total da Carteira</span>
+                    <span class="kpi-label">Total Portfolio Value</span>
                     <span class="kpi-value" id="kpiTotalValue">--</span>
-                    <span class="kpi-sub" id="kpiTotalSub">Calculando...</span>
+                    <span class="kpi-sub" id="kpiTotalSub">Calculating...</span>
                 </div>
             </div>
             <div class="kpi-card kpi-invested">
@@ -61,7 +57,7 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Total Investido</span>
+                    <span class="kpi-label">Total Invested</span>
                     <span class="kpi-value" id="kpiInvested">--</span>
                     <span class="kpi-sub" id="kpiInvestedSub">--</span>
                 </div>
@@ -71,9 +67,9 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Lucro / Prejuízo</span>
+                    <span class="kpi-label">Profit / Loss</span>
                     <span class="kpi-value" id="kpiProfit">--</span>
-                    <span class="kpi-sub" id="kpiProfitSub">Calculando...</span>
+                    <span class="kpi-sub" id="kpiProfitSub">Calculating...</span>
                 </div>
             </div>
             <div class="kpi-card kpi-dividends">
@@ -81,9 +77,9 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22V8"/><path d="m3 3 5 5"/><path d="m21 3-5 5"/></svg>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Total de Operações</span>
+                    <span class="kpi-label">Total Trades</span>
                     <span class="kpi-value" id="kpiTrades">--</span>
-                    <span class="kpi-sub" id="kpiTradesSub">Desde o início</span>
+                    <span class="kpi-sub" id="kpiTradesSub">Since the beginning</span>
                 </div>
             </div>
         </section>
@@ -92,9 +88,9 @@
         <section class="charts-row">
             <div class="chart-card chart-large">
                 <div class="chart-header">
-                    <h2 class="chart-title">Evolução do Patrimônio Investido</h2>
+                    <h2 class="chart-title">Evolution of Invested Wealth</h2>
                     <div class="chart-legend-custom">
-                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-primary)"></span>Valor Acumulado (R$)</span>
+                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-primary)"></span>Accumulated Value (R$)</span>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -103,7 +99,7 @@
             </div>
             <div class="chart-card chart-small">
                 <div class="chart-header">
-                    <h2 class="chart-title">Alocação por Categoria</h2>
+                    <h2 class="chart-title">Allocation by Category</h2>
                 </div>
                 <div class="chart-container chart-container-donut">
                     <canvas id="allocationChart"></canvas>
@@ -116,9 +112,9 @@
         <section class="charts-row">
             <div class="chart-card chart-medium">
                 <div class="chart-header">
-                    <h2 class="chart-title">Aportes Mensais</h2>
+                    <h2 class="chart-title">Monthly Contributions</h2>
                     <div class="chart-legend-custom">
-                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-blue)"></span>Investido (R$)</span>
+                        <span class="legend-item"><span class="legend-dot" style="background: var(--accent-blue)"></span>Invested (R$)</span>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -127,7 +123,7 @@
             </div>
             <div class="chart-card chart-medium">
                 <div class="chart-header">
-                    <h2 class="chart-title">Compras vs Vendas</h2>
+                    <h2 class="chart-title">Purchases vs Sales</h2>
                 </div>
                 <div class="chart-container">
                     <canvas id="tradesChart"></canvas>
@@ -139,11 +135,11 @@
         <section class="holdings-section">
             <div class="chart-card">
                 <div class="chart-header">
-                    <h2 class="chart-title">Carteira de Ativos</h2>
+                    <h2 class="chart-title">Asset Portfolio</h2>
                     <div class="filter-tabs">
-                        <button class="filter-tab active" data-filter="all">Todos</button>
+                        <button class="filter-tab active" data-filter="all">All</button>
                         <button class="filter-tab" data-filter="FII">FII</button>
-                        <button class="filter-tab" data-filter="Ações">Ações</button>
+                        <button class="filter-tab" data-filter="Ações">Stocks</button>
                         <button class="filter-tab" data-filter="BDR">BDR</button>
                     </div>
                 </div>
@@ -151,14 +147,14 @@
                     <table class="holdings-table" id="holdingsTable">
                         <thead>
                             <tr>
-                                <th>Ativo</th>
-                                <th>Categoria</th>
-                                <th>Cotas</th>
-                                <th>Preço Médio</th>
-                                <th>Cotação Atual</th>
-                                <th>Valor Atual</th>
-                                <th>Retorno Total</th>
-                                <th>Custo Total</th>
+                                <th>Asset</th>
+                                <th>Category</th>
+                                <th>Shares</th>
+                                <th>Average Price</th>
+                                <th>Current Quote</th>
+                                <th>Current Value</th>
+                                <th>Total Return</th>
+                                <th>Total Cost</th>
                             </tr>
                         </thead>
                         <tbody id="holdingsBody">
@@ -172,7 +168,7 @@
         <section class="charts-row">
             <div class="chart-card chart-medium">
                 <div class="chart-header">
-                    <h2 class="chart-title">Composição da Carteira</h2>
+                    <h2 class="chart-title">Portfolio Composition</h2>
                 </div>
                 <div class="chart-container">
                     <canvas id="holdingsBarChart"></canvas>
@@ -180,7 +176,7 @@
             </div>
             <div class="chart-card chart-medium">
                 <div class="chart-header">
-                    <h2 class="chart-title">Performance por Ativo (%)</h2>
+                    <h2 class="chart-title">Performance by Asset (%)</h2>
                 </div>
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
@@ -191,7 +187,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Portfolio Dashboard &copy; 2026 — Dados extraídos da tabela de corretagem | Cotações via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
+        <p>Portfolio Dashboard &copy; 2026 — Data extracted from the brokerage table | Quotes via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
     </footer>
 
     <script src="dashboard.js"></script>
