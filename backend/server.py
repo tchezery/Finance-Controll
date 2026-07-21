@@ -24,10 +24,16 @@ GOOGLE_CLIENT_ID = '876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleuse
 def normalize_sheet_url(sheet_url):
     if not sheet_url: return sheet_url
     sheet_url = sheet_url.strip()
+    
+    # Extract gid to support multiple tabs
+    gid_match = re.search(r'[#&]?gid=(\d+)', sheet_url)
+    gid_param = f"&gid={gid_match.group(1)}" if gid_match else ""
+
     if 'pubhtml' in sheet_url:
-        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
+        sheet_url = re.sub(r'pubhtml.*', f'pub?output=csv{gid_param}', sheet_url)
     elif '/edit' in sheet_url:
-        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
+        sheet_url = re.sub(r'/edit.*', f'/export?format=csv{gid_param}', sheet_url)
+        
     return sheet_url
 
 @app.route('/')
