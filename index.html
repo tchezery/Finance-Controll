@@ -37,7 +37,6 @@
                 <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
                     <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
                     <button id="settingsBtn" class="nav-tab">Profile</button>
-                    <button id="logoutBtn" class="nav-tab">Logout</button>
                 </div>
                 
                 <button id="manualRefreshBtn" class="nav-tab" style="padding: 4px 8px; display: flex; align-items: center; justify-content: center;" title="Refresh Data">
@@ -331,10 +330,13 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 20px;">
-                <div>
-                    <h3 style="font-size: 14px; margin-bottom: 8px;">Account Information</h3>
-                    <p style="font-size: 12px;"><strong>Name:</strong> <span id="profileNameDisplay"></span></p>
-                    <p style="font-size: 12px;"><strong>Email:</strong> <span id="profileEmailDisplay"></span></p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h3 style="font-size: 14px; margin-bottom: 8px;">Account Information</h3>
+                        <p style="font-size: 12px;"><strong>Name:</strong> <span id="profileNameDisplay"></span></p>
+                        <p style="font-size: 12px;"><strong>Email:</strong> <span id="profileEmailDisplay"></span></p>
+                    </div>
+                    <button id="logoutBtn" class="nav-tab" style="color: #ff6b6b; border-color: #ff6b6b;">Logout</button>
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
