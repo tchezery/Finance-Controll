@@ -1,7 +1,10 @@
 import os
 import json
+import io
+import csv
 import urllib.request
-from flask import Flask, send_from_directory, jsonify, request, session
+import re
+from flask import Flask, send_from_directory, jsonify, request, session, Response
 from flask_session import Session
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -62,9 +65,35 @@ def update_settings():
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({"error": "Not logged in"}), 401
-    sheet_url = request.json.get('sheet_url', '').strip()
-    database.update_sheet_url(user_id, sheet_url)
-    return jsonify({"success": True, "sheet_url": sheet_url})
+    data = request.json
+    sheet_url = data.get('sheet_url', '').strip()
+    
+    # Normalize Google Sheets URL to CSV format
+    if 'pubhtml' in sheet_url:
+        sheet_url = sheet_url.replace('pubhtml', 'pub?output=csv')
+    elif '/edit' in sheet_url:
+        sheet_url = re.sub(r'/edit.*', '/export?format=csv', sheet_url)
+
+    column_mappings = data.get('column_mappings')
+    mappings_str = json.dumps(column_mappings) if column_mappings else None
+    refresh_interval = data.get('refresh_interval', 3)
+    
+    database.update_user_settings(user_id, sheet_url, mappings_str, int(refresh_interval))
+    return jsonify({"success": True, "sheet_url": sheet_url, "column_mappings": column_mappings, "refresh_interval": refresh_interval})
+
+@app.route('/api/template', methods=['GET'])
+def download_template():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Data Pregão', 'Nº Nota', 'C/V', 'Tipo Mercado', 'Especificação do Título', 'Quantidade', 'Preço (R$)', 'Valor Operação (R$)'])
+    writer.writerow(['15/01/2026', '123456', 'C', 'Mercado à Vista', 'PETROBRAS PN N2', '100', '35.50', '3550.00'])
+    writer.writerow(['16/01/2026', '123457', 'V', 'Mercado à Vista', 'FII MAXI REN', '50', '10.20', '510.00'])
+    
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=modelo_investimentos.csv"}
+    )
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
@@ -86,7 +115,10 @@ def get_portfolio():
         return jsonify({"error": "URL_REQUIRED", "message": "Please configure your Google Sheet URL."}), 400
 
     url = user['sheet_url']
-    trades = extract_trades(url)
+    mappings_str = user.get('column_mappings')
+    mappings = json.loads(mappings_str) if mappings_str else None
+
+    trades = extract_trades(url, mappings)
     if not trades:
         return jsonify({"error": "Falha ao puxar dados do Google Sheets"}), 500
     

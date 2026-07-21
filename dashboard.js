@@ -955,6 +955,26 @@ async function checkAuthState() {
             
             if (user.sheet_url) {
                 document.getElementById('sheetUrlInput').value = user.sheet_url;
+            }
+            if (user.column_mappings) {
+                try {
+                    const mappings = JSON.parse(user.column_mappings);
+                    document.getElementById('mapDate').value = mappings.mapDate || '';
+                    document.getElementById('mapAsset').value = mappings.mapAsset || '';
+                    document.getElementById('mapType').value = mappings.mapType || '';
+                    document.getElementById('mapQuantity').value = mappings.mapQuantity || '';
+                    document.getElementById('mapPrice').value = mappings.mapPrice || '';
+                    document.getElementById('mapTotalValue').value = mappings.mapTotalValue || '';
+                } catch(e) {}
+            }
+            if (user.refresh_interval !== undefined) {
+                window.refreshMinutes = user.refresh_interval;
+                const select = document.getElementById('refreshIntervalSelect');
+                if (select) select.value = window.refreshMinutes;
+            } else {
+                window.refreshMinutes = 3;
+            }
+            if (user.sheet_url) {
                 showDashboard();
             } else {
                 showProfile();
@@ -992,11 +1012,13 @@ async function startDashboard() {
         initHistoryFilters();
         initChartPeriodFilters();
         await fetchQuotes();
-        
-        setInterval(async () => {
-            console.log("Auto-updating quotes...");
-            await fetchQuotes();
-        }, 3 * 60 * 1000);
+        if (window.autoRefreshTimer) clearInterval(window.autoRefreshTimer);
+        if (window.refreshMinutes > 0) {
+            window.autoRefreshTimer = setInterval(async () => {
+                console.log("Auto-updating quotes...");
+                await fetchQuotes();
+            }, window.refreshMinutes * 60 * 1000);
+        }
     }
 }
 
@@ -1019,10 +1041,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = document.getElementById('sheetUrlInput').value;
         if (!url) return alert('Please enter a Google Sheets CSV URL');
         
+        const column_mappings = {
+            mapDate: document.getElementById('mapDate').value.trim(),
+            mapAsset: document.getElementById('mapAsset').value.trim(),
+            mapType: document.getElementById('mapType').value.trim(),
+            mapQuantity: document.getElementById('mapQuantity').value.trim(),
+            mapPrice: document.getElementById('mapPrice').value.trim(),
+            mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
+        };
+        const refreshInterval = document.getElementById('refreshIntervalSelect').value;
+
         const res = await fetch('/api/user/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sheet_url: url })
+            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval })
         });
         
         if (res.ok) {
@@ -1033,6 +1065,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initial Check
+    const downloadBtn = document.getElementById('downloadTemplateBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            window.location.href = '/api/template';
+        });
+    }
+
+    const manualRefreshBtn = document.getElementById('manualRefreshBtn');
+    if (manualRefreshBtn) {
+        manualRefreshBtn.addEventListener('click', async () => {
+            await fetchQuotes();
+        });
+    }
+
+    // Check auth on load
     checkAuthState();
 });

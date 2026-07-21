@@ -97,7 +97,7 @@ def parse_date(date_val) -> str:
 # MAIN EXTRACTION LOGIC
 # ==========================================
 
-def extract_trades(url: str) -> list:
+def extract_trades(url: str, mappings: dict = None) -> list:
     """Lê a planilha do Google Sheets via CSV e retorna as transações."""
     try:
         df = pd.read_csv(url)
@@ -105,29 +105,38 @@ def extract_trades(url: str) -> list:
         print(f"Erro ao baixar os dados do Google Sheets: {e}")
         return []
 
-    col_title = 'Especificação do Título'
-    if col_title not in df.columns:
-        print("Erro: Planilha não possui o cabeçalho padrão da B3.")
+    if not mappings:
+        mappings = {}
+        
+    col_asset = mappings.get('mapAsset') or 'Especificação do Título'
+    col_date = mappings.get('mapDate') or 'Data Pregão'
+    col_type = mappings.get('mapType') or 'C/V'
+    col_qty = mappings.get('mapQuantity') or 'Quantidade'
+    col_price = mappings.get('mapPrice') or 'Preço (R$)'
+    col_val = mappings.get('mapTotalValue') or 'Valor Operação (R$)'
+
+    if col_asset not in df.columns:
+        print(f"Erro: Planilha não possui o cabeçalho '{col_asset}'.")
         return []
 
     # Remove linhas vazias
-    df = df.dropna(subset=[col_title])
+    df = df.dropna(subset=[col_asset])
 
     trades = []
     for _, row in df.iterrows():
-        raw_title = str(row[col_title]).strip()
+        raw_title = str(row[col_asset]).strip()
         if pd.isna(raw_title) or raw_title == 'nan':
             continue
             
-        cv = str(row.get('C/V', '')).strip().upper()
+        cv = str(row.get(col_type, '')).strip().upper()
         if cv not in ['C', 'V']:
             continue
             
-        date_val = row.get('Data Pregão', '')
+        date_val = row.get(col_date, '')
         ticker = resolve_ticker(raw_title)
-        qty = parse_float(row.get('Quantidade', 0))
-        price = parse_float(row.get('Preço (R$)', 0))
-        val_op = parse_float(row.get('Valor Operação (R$)', 0))
+        qty = parse_float(row.get(col_qty, 0))
+        price = parse_float(row.get(col_price, 0))
+        val_op = parse_float(row.get(col_val, 0))
         
         if val_op == 0:
             val_op = qty * price
