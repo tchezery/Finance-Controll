@@ -80,9 +80,10 @@ def update_settings():
     mappings_str = json.dumps(column_mappings) if column_mappings else None
     refresh_interval = data.get('refresh_interval', 3)
     theme = data.get('theme', 'theme-claude')
+    default_chart_period = data.get('default_chart_period', '1y')
     
-    database.update_user_settings(user_id, sheet_url, mappings_str, int(refresh_interval), theme)
-    return jsonify({"success": True, "sheet_url": sheet_url, "column_mappings": column_mappings, "refresh_interval": refresh_interval, "theme": theme})
+    database.update_user_settings(user_id, sheet_url, mappings_str, int(refresh_interval), theme, default_chart_period)
+    return jsonify({"success": True, "sheet_url": sheet_url, "column_mappings": column_mappings, "refresh_interval": refresh_interval, "theme": theme, "default_chart_period": default_chart_period})
 
 @app.route('/api/sheet/headers', methods=['POST'])
 def get_sheet_headers():

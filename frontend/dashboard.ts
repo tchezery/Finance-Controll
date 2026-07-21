@@ -1034,6 +1034,19 @@ async function checkAuthState() {
             } else {
                 document.body.className = 'theme-claude';
             }
+            if (user.default_chart_period) {
+                activeInvestmentsPeriod = user.default_chart_period;
+                activeTradesPeriod = user.default_chart_period;
+                
+                const periodSelect = document.getElementById('defaultChartPeriodSelect');
+                if (periodSelect) periodSelect.value = user.default_chart_period;
+                
+                const invFilter = document.getElementById('investmentsPeriodFilter');
+                if (invFilter) invFilter.value = user.default_chart_period;
+                
+                const trFilter = document.getElementById('tradesPeriodFilter');
+                if (trFilter) trFilter.value = user.default_chart_period;
+            }
             if (user.sheet_url) {
                 showDashboard();
             } else {
@@ -1131,11 +1144,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
         const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
+        const defaultChartPeriod = document.getElementById('defaultChartPeriodSelect') ? document.getElementById('defaultChartPeriodSelect').value : '15';
 
         const res = await fetch('/api/user/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval, theme })
+            body: JSON.stringify({ sheet_url: url, column_mappings, refresh_interval: refreshInterval, theme, default_chart_period: defaultChartPeriod })
         });
         
         if (res.ok) {

@@ -8,7 +8,8 @@
     <meta name="description" content="Interactive dashboard for monitoring investments on B3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -37,17 +38,21 @@
             <nav class="main-nav" style="margin-bottom: 0; justify-content: center;">
                 <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
                 <button class="nav-tab" data-view="historyView">History</button>
-                <button class="nav-tab" data-view="profileView" id="headerProfileBtn" style="display: none;">Profile</button>
+                <button class="nav-tab" data-view="profileView" id="headerProfileBtn"
+                    style="display: none;">Profile</button>
             </nav>
 
             <div class="header-right" style="flex: 1; justify-content: flex-end;">
                 <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
                     <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
                 </div>
-                
-                <button id="manualRefreshBtn" class="nav-tab" style="padding: 4px 8px; display: flex; align-items: center; justify-content: center;" title="Refresh Data">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+
+                <button id="manualRefreshBtn" class="nav-tab"
+                    style="padding: 4px 8px; display: flex; align-items: center; justify-content: center;"
+                    title="Refresh Data">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
                     </svg>
                 </button>
 
@@ -157,37 +162,37 @@
             <!-- Charts Row 2 -->
             <section class="charts-row">
                 <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Monthly Contributions</h2>
-                    <div style="display: flex; gap: 12px; align-items: center;">
-                        <select id="investmentsPeriodFilter" class="modern-select">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Monthly Contributions</h2>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <select id="investmentsPeriodFilter" class="modern-select">
+                                <option value="15">Last 15 months</option>
+                                <option value="36">Last 3 years</option>
+                                <option value="all">All time</option>
+                            </select>
+                            <div class="chart-legend-custom">
+                                <span class="legend-item"><span class="legend-dot"
+                                        style="background: var(--accent-blue)"></span>Invested (R$)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="investmentsChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-medium">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Purchases vs Sales</h2>
+                        <select id="tradesPeriodFilter" class="modern-select">
                             <option value="15">Last 15 months</option>
                             <option value="36">Last 3 years</option>
                             <option value="all">All time</option>
                         </select>
-                        <div class="chart-legend-custom">
-                            <span class="legend-item"><span class="legend-dot"
-                                    style="background: var(--accent-blue)"></span>Invested (R$)</span>
-                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tradesChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="investmentsChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card chart-medium">
-                <div class="chart-header">
-                    <h2 class="chart-title">Purchases vs Sales</h2>
-                    <select id="tradesPeriodFilter" class="modern-select">
-                        <option value="15">Last 15 months</option>
-                        <option value="36">Last 3 years</option>
-                        <option value="all">All time</option>
-                    </select>
-                </div>
-                <div class="chart-container">
-                    <canvas id="tradesChart"></canvas>
-                </div>
-            </div>
             </section>
 
             <!-- Asset Analysis -->
@@ -327,10 +332,11 @@
     <!-- Profile Page -->
     <main id="profilePage" class="main-content" style="display: none;">
         <div class="chart-card" style="max-width: 600px; margin: 40px auto; height: auto;">
-            <div class="chart-header" style="background: #000080; padding: 4px 8px; margin: -16px -16px 24px -16px; color: #fff;">
+            <div class="chart-header"
+                style="background: #000080; padding: 4px 8px; margin: -16px -16px 24px -16px; color: #fff;">
                 <h2 class="chart-title" style="color: #fff; margin: 0;">User Profile & Settings</h2>
             </div>
-            
+
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
@@ -338,24 +344,33 @@
                         <p style="font-size: 12px;"><strong>Name:</strong> <span id="profileNameDisplay"></span></p>
                         <p style="font-size: 12px;"><strong>Email:</strong> <span id="profileEmailDisplay"></span></p>
                     </div>
-                    <button id="logoutBtn" class="nav-tab" style="color: #ff6b6b; border-color: #ff6b6b;">Logout</button>
+                    <button id="logoutBtn" class="nav-tab"
+                        style="color: #ff6b6b; border-color: #ff6b6b;">Logout</button>
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff;">
 
                 <div>
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Data Source Configuration</h3>
-                    <p style="font-size: 12px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):</p>
-                    <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here. <a href="#" id="howToLink" style="color: var(--accent-primary); text-decoration: underline; margin-left: 4px;">How to get this link?</a></p>
+                    <p style="font-size: 12px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):
+                    </p>
+                    <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared
+                        properly, and copy the CSV export link here. <a href="#" id="howToLink"
+                            style="color: var(--accent-primary); text-decoration: underline; margin-left: 4px;">How to
+                            get this link?</a></p>
                     <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                        <input type="text" id="sheetUrlInput" class="styled-select" style="flex: 1; box-sizing: border-box;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
-                        <button id="analyzeSheetBtn" class="nav-tab" style="padding: 4px 12px; white-space: nowrap;">Analyze Sheet</button>
+                        <input type="text" id="sheetUrlInput" class="styled-select"
+                            style="flex: 1; box-sizing: border-box;"
+                            placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
+                        <button id="analyzeSheetBtn" class="nav-tab"
+                            style="padding: 4px 12px; white-space: nowrap;">Analyze Sheet</button>
                     </div>
                 </div>
 
                 <div style="margin-top: 10px;">
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Auto-Refresh Interval</h3>
-                    <select id="refreshIntervalSelect" class="styled-select" style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
+                    <select id="refreshIntervalSelect" class="styled-select"
+                        style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
                         <option value="0">Never (Manual only)</option>
                         <option value="1">1 minute</option>
                         <option value="3" selected>3 minutes</option>
@@ -363,51 +378,97 @@
                         <option value="10">10 minutes</option>
                     </select>
                 </div>
-                
+
                 <div style="margin-top: 10px;">
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Theme Preference</h3>
-                    <select id="themeSelect" class="styled-select" style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
-                        <option value="theme-claude" selected>Claude Style (Modern & Warm)</option>
-                        <option value="theme-retro">Classic Retro (Windows 95)</option>
+                    <select id="themeSelect" class="styled-select"
+                        style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
+                        <option value="theme-claude" selected>Modern</option>
+                        <option value="theme-retro">Retro</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 10px;">
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Default Chart Period</h3>
+                    <select id="defaultChartPeriodSelect" class="styled-select"
+                        style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
+                        <option value="15">Last 15 months</option>
+                        <option value="36">Last 3 years</option>
+                        <option value="all">All time</option>
                     </select>
                 </div>
 
                 <div id="mappingSection" style="margin-top: 10px; display: none;">
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Column Mappings</h3>
-                    <p style="font-size: 11px; margin-bottom: 8px;">We analyzed your sheet! Please confirm the columns match the required fields below.</p>
-                    
+                    <p style="font-size: 11px; margin-bottom: 8px;">We analyzed your sheet! Please confirm the columns
+                        match the required fields below.</p>
+
                     <div style="margin-bottom: 12px;">
-                        <button id="downloadTemplateBtn" class="btn" style="font-size: 11px; padding: 6px 12px;">Download Model Template</button>
+                        <button id="downloadTemplateBtn" class="btn"
+                            style="font-size: 11px; padding: 6px 12px;">Download Model Template</button>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Trade Date <span title="The date the operation occurred (e.g., Data Pregão)" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapDate" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Trade
+                                Date <span title="The date the operation occurred (e.g., Data Pregão)"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapDate" class="styled-select" style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Asset Specification <span title="The name or ticker of the asset (e.g., Especificação do Título)" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapAsset" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Asset
+                                Specification <span
+                                    title="The name or ticker of the asset (e.g., Especificação do Título)"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapAsset" class="styled-select" style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Buy/Sell Type (C/V) <span title="Indicates if it was a Buy (C) or Sell (V) operation (e.g., C/V)" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapType" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Buy/Sell
+                                Type (C/V) <span title="Indicates if it was a Buy (C) or Sell (V) operation (e.g., C/V)"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapType" class="styled-select" style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Quantity <span title="The number of shares/quotas traded (e.g., Quantidade)" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapQuantity" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Quantity
+                                <span title="The number of shares/quotas traded (e.g., Quantidade)"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapQuantity" class="styled-select" style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Unit Price <span title="The price per single share (e.g., Preço (R$))" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapPrice" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Unit
+                                Price <span title="The price per single share (e.g., Preço (R$))"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapPrice" class="styled-select" style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Total Value <span title="The total monetary value of the operation (e.g., Valor Operação (R$))" style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
-                            <select id="mapTotalValue" class="styled-select" style="width: 100%; box-sizing: border-box;"><option value="">Loading...</option></select>
+                            <label
+                                style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px;">Total
+                                Value <span
+                                    title="The total monetary value of the operation (e.g., Valor Operação (R$))"
+                                    style="cursor: help; color: #3b82f6; font-size: 10px; border: 1px solid #3b82f6; border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;">?</span></label>
+                            <select id="mapTotalValue" class="styled-select"
+                                style="width: 100%; box-sizing: border-box;">
+                                <option value="">Loading...</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                
+
                 <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
                     <button id="backToDashboardBtn" class="btn">Back to Dashboard</button>
                     <button id="saveSettingsBtn" class="btn btn-primary">Save & Sync</button>
@@ -417,14 +478,19 @@
     </main>
 
     <!-- Instructions Modal -->
-    <div id="instructionsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
-        <div class="chart-card" style="width: 450px; max-width: 90%; height: auto; display: flex; flex-direction: column; gap: 16px; padding: 24px; position: relative;">
-            <button id="closeInstructionsBtn" style="position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-primary);">&times;</button>
-            <div class="chart-header" style="background: var(--accent-primary); padding: 12px 16px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+    <div id="instructionsModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="chart-card"
+            style="width: 450px; max-width: 90%; height: auto; display: flex; flex-direction: column; gap: 16px; padding: 24px; position: relative;">
+            <button id="closeInstructionsBtn"
+                style="position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-primary);">&times;</button>
+            <div class="chart-header"
+                style="background: var(--accent-primary); padding: 12px 16px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
                 <h2 class="chart-title" style="color: #fff; margin: 0;">How to get the CSV link</h2>
             </div>
-            
-            <ol style="font-size: 13px; padding-left: 20px; color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; gap: 8px;">
+
+            <ol
+                style="font-size: 13px; padding-left: 20px; color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; gap: 8px;">
                 <li>Open your Google Spreadsheet.</li>
                 <li>Click on <strong>Share</strong> in the top right corner.</li>
                 <li>Under "General access", change it to <strong>"Anyone with the link"</strong> (Viewer).</li>
@@ -434,7 +500,7 @@
                 <li>Click <strong>Publish</strong>, then copy the link provided.</li>
                 <li>Paste the link into the configuration field below.</li>
             </ol>
-            
+
             <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
                 <button id="gotItBtn" class="btn btn-primary">Got it!</button>
             </div>
@@ -442,21 +508,27 @@
     </div>
 
     <!-- Login Overlay -->
-    <div id="loginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
-        <div class="chart-card" style="width: 350px; height: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px;">
-            <div class="chart-header" style="background: var(--accent-primary); padding: 8px 12px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); text-align: left; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+    <div id="loginOverlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="chart-card"
+            style="width: 350px; height: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px;">
+            <div class="chart-header"
+                style="background: var(--accent-primary); padding: 8px 12px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); text-align: left; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
                 <h2 class="chart-title" style="color: #fff; margin: 0;">Authentication Required</h2>
             </div>
             <div class="logo-icon" style="margin-bottom: 10px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                 </svg>
             </div>
             <h3 style="font-size: 16px;" translate="no">Finance Controll</h3>
             <p style="font-size: 12px; margin-bottom: 8px;">Please sign in to access your portfolio.</p>
-            
+
             <div id="authContainer">
-                <div id="g_id_onload" data-client_id="876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+                <div id="g_id_onload"
+                    data-client_id="876883426728-c6e5peaq9cs01pm4h9g5335dds8ffkl8.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
                 <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large"></div>
             </div>
         </div>
@@ -464,11 +536,12 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p style="margin-bottom: 12px;"><span translate="no">Finance Controll</span> &copy; 2026 — Data extracted from the brokerage table | Quotes via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
+        <p style="margin-bottom: 12px;"><span translate="no">Finance Controll</span> &copy; 2026 — Data extracted from
+            the brokerage table | Quotes via <a href="https://brapi.dev" target="_blank">brapi.dev</a></p>
         <div style="font-size: 11px;">
-            Created by <strong>Tchezery Ribeiro</strong> | 
-            <a href="https://linkedin.com/in/tchezery" target="_blank">LinkedIn</a> | 
-            <a href="https://github.com/tchezery" target="_blank">GitHub</a> | 
+            Created by <strong>Tchezery Ribeiro</strong> |
+            <a href="https://linkedin.com/in/tchezery" target="_blank">LinkedIn</a> |
+            <a href="https://github.com/tchezery" target="_blank">GitHub</a> |
             <a href="mailto:tchezeryribeiro@gmail.com">tchezeryribeiro@gmail.com</a>
         </div>
     </footer>
