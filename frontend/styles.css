@@ -20,6 +20,8 @@ body.theme-retro {
     --header-bg: #c0c0c0;
     --btn-shadow: var(--win-outset);
     --btn-active-shadow: var(--win-inset);
+    --input-bg: #ffffff;
+    --input-border: transparent;
 }
 
 body.theme-claude {
@@ -44,6 +46,8 @@ body.theme-claude {
     --header-bg: rgba(250, 249, 246, 0.95);
     --btn-shadow: 0 2px 4px rgba(0,0,0,0.05);
     --btn-active-shadow: none;
+    --input-bg: #F4F3EE;
+    --input-border: #E6E4DD;
 }
 
 * {
@@ -318,14 +322,20 @@ h1, h2, h3, .logo-title {
 }
 
 .styled-select, .modern-select {
-    padding: 4px 8px;
-    background: #fff;
-    color: #000;
+    padding: 8px 12px;
+    background: var(--input-bg);
+    color: var(--text-primary);
     font-family: inherit;
-    font-size: 12px;
-    border: none;
+    font-size: 13px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-md);
     box-shadow: var(--win-inset);
-    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.styled-select:focus, .modern-select:focus {
+    border-color: var(--accent-primary);
 }
 
 .filter-tabs {
