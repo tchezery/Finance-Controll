@@ -149,6 +149,32 @@ function updateDashboard() {
         initAssetAnalysisControls();
         assetAnalysisInitialized = true;
     }
+
+    renderFullHistoryTable();
+}
+
+// ---- Toast Notification ----
+function showToast(message, type = 'success') {
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    toastContainer.appendChild(toast);
+    
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // ---- KPIs ----
@@ -938,7 +964,7 @@ async function handleCredentialResponse(response) {
         if (data.success) {
             checkAuthState();
         } else {
-            alert('Login failed');
+            showToast('Login failed', 'error');
         }
     } catch (e) {
         console.error("Login request failed", e);
@@ -1061,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
         const url = document.getElementById('sheetUrlInput').value;
-        if (!url) return alert('Please enter a Google Sheets CSV URL');
+        if (!url) return showToast('Please enter a Google Sheets CSV URL', 'error');
         
         const column_mappings = {
             mapDate: document.getElementById('mapDate').value.trim(),
@@ -1082,12 +1108,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (res.ok) {
             document.body.className = theme;
-            alert('Settings saved successfully!');
+            showToast('Settings saved successfully!', 'success');
             dashboardStarted = false; // force reload data if URL changed
             showDashboard();
         } else {
             const errData = await res.json();
-            alert('Failed to save settings: ' + (errData.error || 'Unknown error'));
+            showToast('Failed to save settings: ' + (errData.error || 'Unknown error'), 'error');
         }
     });
 
@@ -1102,7 +1128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (analyzeBtn) {
         analyzeBtn.addEventListener('click', async () => {
             const url = document.getElementById('sheetUrlInput').value;
-            if (!url) return alert('Please enter a Google Sheets URL first');
+            if (!url) return showToast('Please enter a Google Sheets URL first', 'error');
             
             analyzeBtn.textContent = 'Analyzing...';
             analyzeBtn.disabled = true;
@@ -1119,10 +1145,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     populateMappingSelects(data.headers);
                     document.getElementById('mappingSection').style.display = 'block';
                 } else {
-                    alert('Failed to analyze sheet: ' + (data.error || 'Unknown error'));
+                    showToast('Failed to analyze sheet: ' + (data.error || 'Unknown error'), 'error');
                 }
             } catch (err) {
-                alert('Error connecting to server.');
+                showToast('Error connecting to server.', 'error');
             }
             
             analyzeBtn.textContent = 'Analyze Sheet';
