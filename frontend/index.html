@@ -21,7 +21,7 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <div class="logo-section">
+            <div class="logo-section" style="flex: 1;">
                 <div class="logo-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -33,10 +33,16 @@
                     <p class="logo-subtitle">B3 Investment — Brokerage</p>
                 </div>
             </div>
-            <div class="header-right">
+
+            <nav class="main-nav" style="margin-bottom: 0; justify-content: center;">
+                <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
+                <button class="nav-tab" data-view="historyView">History</button>
+                <button class="nav-tab" data-view="profileView" id="headerProfileBtn" style="display: none;">Profile</button>
+            </nav>
+
+            <div class="header-right" style="flex: 1; justify-content: flex-end;">
                 <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
                     <span id="userName" style="font-size: 13px; font-weight: bold;"></span>
-                    <button id="settingsBtn" class="nav-tab">Profile</button>
                 </div>
                 
                 <button id="manualRefreshBtn" class="nav-tab" style="padding: 4px 8px; display: flex; align-items: center; justify-content: center;" title="Refresh Data">
@@ -58,10 +64,6 @@
     <!-- Dashboard Page -->
     <main id="dashboardPage" class="main-content">
         <!-- Navigation -->
-        <nav class="main-nav">
-            <button class="nav-tab active" data-view="dashboardView">Dashboard</button>
-            <button class="nav-tab" data-view="historyView">History</button>
-        </nav>
 
         <div id="dashboardView">
             <!-- KPI Cards Row -->
@@ -344,7 +346,7 @@
                 <div>
                     <h3 style="font-size: 14px; margin-bottom: 8px;">Data Source Configuration</h3>
                     <p style="font-size: 12px; margin-bottom: 12px; font-weight: bold;">Google Sheets Link (CSV format):</p>
-                    <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here.</p>
+                    <p style="font-size: 11px; margin-bottom: 8px;">Ensure your spreadsheet is public or shared properly, and copy the CSV export link here. <a href="#" id="howToLink" style="color: var(--accent-primary); text-decoration: underline; margin-left: 4px;">How to get this link?</a></p>
                     <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                         <input type="text" id="sheetUrlInput" class="styled-select" style="flex: 1; box-sizing: border-box;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
                         <button id="analyzeSheetBtn" class="nav-tab" style="padding: 4px 12px; white-space: nowrap;">Analyze Sheet</button>
@@ -414,6 +416,31 @@
         </div>
     </main>
 
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="chart-card" style="width: 450px; max-width: 90%; height: auto; display: flex; flex-direction: column; gap: 16px; padding: 24px; position: relative;">
+            <button id="closeInstructionsBtn" style="position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-primary);">&times;</button>
+            <div class="chart-header" style="background: var(--accent-primary); padding: 12px 16px; margin: -24px -24px 16px -24px; color: #fff; width: calc(100% + 48px); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                <h2 class="chart-title" style="color: #fff; margin: 0;">How to get the CSV link</h2>
+            </div>
+            
+            <ol style="font-size: 13px; padding-left: 20px; color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; gap: 8px;">
+                <li>Open your Google Spreadsheet.</li>
+                <li>Click on <strong>Share</strong> in the top right corner.</li>
+                <li>Under "General access", change it to <strong>"Anyone with the link"</strong> (Viewer).</li>
+                <li>Click on <strong>File</strong> > <strong>Share</strong> > <strong>Publish to web</strong>.</li>
+                <li>In the "Link" tab, select your specific sheet (e.g. "Operations") or "Entire Document".</li>
+                <li>In the second dropdown, select <strong>"Comma-separated values (.csv)"</strong>.</li>
+                <li>Click <strong>Publish</strong>, then copy the link provided.</li>
+                <li>Paste the link into the configuration field below.</li>
+            </ol>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                <button id="gotItBtn" class="btn btn-primary">Got it!</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Overlay -->
     <div id="loginOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center;">
         <div class="chart-card" style="width: 350px; height: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px;">
@@ -446,7 +473,7 @@
         </div>
     </footer>
 
-    <script src="dashboard.js"></script>
+    <script src="dist/dashboard.js"></script>
 </body>
 
 </html>

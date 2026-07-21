@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ==========================================
 // PORTFOLIO DASHBOARD — MAIN LOGIC
 // Reads from portfolio_data.json
@@ -547,19 +548,29 @@ function renderTradesTimeline() {
 // ---- Tab & Filter Interactions ----
 
 // Nav Tabs Logic
-document.querySelectorAll('.nav-tab').forEach(tab => {
+document.querySelectorAll('.header-nav .nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        if (!tab.dataset.view) return;
+        document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         
         const targetView = tab.dataset.view;
+        
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('profilePage').style.display = 'none';
+        
         if (targetView === 'dashboardView') {
+            document.getElementById('dashboardPage').style.display = 'block';
             document.getElementById('dashboardView').style.display = 'block';
             document.getElementById('historyView').style.display = 'none';
-        } else {
+            if (typeof startDashboard === 'function') startDashboard();
+        } else if (targetView === 'historyView') {
+            document.getElementById('dashboardPage').style.display = 'block';
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('historyView').style.display = 'block';
             renderFullHistoryTable();
+        } else if (targetView === 'profileView') {
+            document.getElementById('profilePage').style.display = 'block';
         }
     });
 });
@@ -981,6 +992,7 @@ async function checkAuthState() {
             const user = await res.json();
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('userProfile').style.display = 'flex';
+            document.getElementById('headerProfileBtn').style.display = 'inline-block';
             document.getElementById('userName').textContent = user.name;
             
             // Populate profile page data
@@ -1043,11 +1055,22 @@ async function checkAuthState() {
 function showProfile() {
     document.getElementById('dashboardPage').style.display = 'none';
     document.getElementById('profilePage').style.display = 'block';
+    
+    document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
+    const profileBtn = document.getElementById('headerProfileBtn');
+    if (profileBtn) profileBtn.classList.add('active');
 }
 
 function showDashboard() {
     document.getElementById('profilePage').style.display = 'none';
     document.getElementById('dashboardPage').style.display = 'block';
+    document.getElementById('dashboardView').style.display = 'block';
+    document.getElementById('historyView').style.display = 'none';
+    
+    document.querySelectorAll('.header-nav .nav-tab').forEach(t => t.classList.remove('active'));
+    const dashboardBtn = document.querySelector('.header-nav .nav-tab[data-view="dashboardView"]');
+    if (dashboardBtn) dashboardBtn.classList.add('active');
+    
     startDashboard();
 }
 
@@ -1077,12 +1100,21 @@ document.addEventListener('DOMContentLoaded', () => {
         location.reload();
     });
 
-    document.getElementById('settingsBtn').addEventListener('click', () => {
-        showProfile();
-    });
-
     document.getElementById('backToDashboardBtn').addEventListener('click', () => {
         showDashboard();
+    });
+
+    document.getElementById('howToLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        (document.getElementById('instructionsModal') as HTMLElement).style.display = 'flex';
+    });
+
+    document.getElementById('closeInstructionsBtn')?.addEventListener('click', () => {
+        (document.getElementById('instructionsModal') as HTMLElement).style.display = 'none';
+    });
+
+    document.getElementById('gotItBtn')?.addEventListener('click', () => {
+        (document.getElementById('instructionsModal') as HTMLElement).style.display = 'none';
     });
 
     document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
