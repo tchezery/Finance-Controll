@@ -1176,6 +1176,8 @@ async function checkAuthState() {
             if (res.ok) {
                 const data = await res.json();
                 document.getElementById('userName').innerHTML = `<span class="first-name">${data.shared_by || 'Shared'}</span><span class="last-name"> Portfolio</span>`;
+                document.getElementById('userProfile').style.display = 'flex';
+                document.getElementById('exitPublicViewBtn').style.display = 'block';
                 PORTFOLIO_DATA = data;
                 dashboardStarted = true;
                 initHistoryFilters();
@@ -1616,6 +1618,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (token) {
                 window.location.href = `/?share=${token}`;
             }
+        });
+    }
+    
+    const exitPublicViewBtn = document.getElementById('exitPublicViewBtn');
+    if (exitPublicViewBtn) {
+        exitPublicViewBtn.addEventListener('click', () => {
+            window.location.href = '/';
         });
     }
 
