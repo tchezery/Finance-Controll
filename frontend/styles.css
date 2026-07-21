@@ -189,6 +189,35 @@ h1, h2, h3, .logo-title {
     border-bottom: 2px solid var(--accent-primary);
 }
 
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: var(--btn-shadow);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--bg-dark);
+}
+
+.btn-primary {
+    background: var(--accent-primary);
+    color: #fff;
+    border: 1px solid var(--accent-primary);
+}
+
+.btn-primary:hover {
+    filter: brightness(0.9);
+}
+
 /* KPIs */
 .kpi-section {
     display: grid;
