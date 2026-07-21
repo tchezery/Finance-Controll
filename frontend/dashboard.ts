@@ -1078,7 +1078,10 @@ async function checkAuthState() {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('userProfile').style.display = 'flex';
             document.getElementById('headerProfileBtn').style.display = 'inline-block';
-            document.getElementById('userName').textContent = user.name;
+            const nameParts = user.name.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.length > 1 ? ' ' + nameParts.slice(1).join(' ') : '';
+            document.getElementById('userName').innerHTML = `<span class="first-name">${firstName}</span><span class="last-name">${lastName}</span>`;
             
             // Populate profile page data
             document.getElementById('profileNameDisplay').textContent = user.name;

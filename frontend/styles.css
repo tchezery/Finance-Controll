@@ -516,6 +516,9 @@ h1, h2, h3, .logo-title {
     .charts-row:nth-of-type(4) {
         grid-template-columns: 1fr !important;
     }
+    #userName .last-name {
+        display: none;
+    }
 }
 
 /* Mobile Responsiveness */
@@ -527,6 +530,10 @@ h1, h2, h3, .logo-title {
     .header, .main-content {
         padding-left: 10px !important;
         padding-right: 10px !important;
+    }
+    
+    #userName {
+        display: none !important;
     }
     
     .header-content {
