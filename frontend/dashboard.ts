@@ -942,20 +942,70 @@ function initAssetAnalysisControls() {
     }
 }
 
+async function saveChartPeriodToDB(period) {
+    // Keep other settings the same, just update the default_chart_period in the DB
+    const url = document.getElementById('sheetUrlInput').value;
+    if (!url) return; // Don't save if no URL is set yet
+    
+    const column_mappings = {
+        mapDate: document.getElementById('mapDate').value.trim(),
+        mapAsset: document.getElementById('mapAsset').value.trim(),
+        mapType: document.getElementById('mapType').value.trim(),
+        mapQuantity: document.getElementById('mapQuantity').value.trim(),
+        mapPrice: document.getElementById('mapPrice').value.trim(),
+        mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
+    };
+    const refreshInterval = document.getElementById('refreshIntervalSelect').value;
+    const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
+
+    try {
+        await fetch('/api/user/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sheet_url: url, 
+                column_mappings, 
+                refresh_interval: refreshInterval, 
+                theme, 
+                default_chart_period: period 
+            })
+        });
+    } catch(e) {
+        console.error("Failed to auto-save chart period", e);
+    }
+}
+
 function initChartPeriodFilters() {
     const invSelect = document.getElementById('investmentsPeriodFilter');
+    const trSelect = document.getElementById('tradesPeriodFilter');
+
     if (invSelect) {
         invSelect.addEventListener('change', (e) => {
             activeInvestmentsPeriod = e.target.value;
             renderInvestmentsChart();
+            
+            // Sync the other filter on the dashboard
+            if (trSelect && trSelect.value !== activeInvestmentsPeriod) {
+                trSelect.value = activeInvestmentsPeriod;
+                activeTradesPeriod = activeInvestmentsPeriod;
+                renderTradesTimeline();
+            }
+            saveChartPeriodToDB(activeInvestmentsPeriod);
         });
     }
 
-    const trSelect = document.getElementById('tradesPeriodFilter');
     if (trSelect) {
         trSelect.addEventListener('change', (e) => {
             activeTradesPeriod = e.target.value;
             renderTradesTimeline();
+            
+            // Sync the other filter on the dashboard
+            if (invSelect && invSelect.value !== activeTradesPeriod) {
+                invSelect.value = activeTradesPeriod;
+                activeInvestmentsPeriod = activeTradesPeriod;
+                renderInvestmentsChart();
+            }
+            saveChartPeriodToDB(activeTradesPeriod);
         });
     }
 }
@@ -1037,9 +1087,6 @@ async function checkAuthState() {
             if (user.default_chart_period) {
                 activeInvestmentsPeriod = user.default_chart_period;
                 activeTradesPeriod = user.default_chart_period;
-                
-                const periodSelect = document.getElementById('defaultChartPeriodSelect');
-                if (periodSelect) periodSelect.value = user.default_chart_period;
                 
                 const invFilter = document.getElementById('investmentsPeriodFilter');
                 if (invFilter) invFilter.value = user.default_chart_period;
@@ -1144,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
         const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';
-        const defaultChartPeriod = document.getElementById('defaultChartPeriodSelect') ? document.getElementById('defaultChartPeriodSelect').value : '15';
+        const defaultChartPeriod = activeInvestmentsPeriod; // keep current active period
 
         const res = await fetch('/api/user/settings', {
             method: 'POST',
