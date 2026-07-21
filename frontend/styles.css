@@ -31,10 +31,10 @@ body.theme-claude {
     --text-primary: #2C2B29;
     --text-secondary: #585652;
     --text-muted: #8F8D87;
-    --accent-primary: #D97757;
-    --accent-primary-glow: rgba(217, 119, 87, 0.15);
-    --accent-blue: #D97757;
-    --accent-green: #4A8062;
+    --accent-primary: #518A60;
+    --accent-primary-glow: rgba(81, 138, 96, 0.15);
+    --accent-blue: #4B789E;
+    --accent-green: #518A60;
     --accent-red: #C55353;
     --radius-lg: 16px;
     --radius-md: 8px;
