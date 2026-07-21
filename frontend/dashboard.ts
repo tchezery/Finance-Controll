@@ -1025,10 +1025,12 @@ async function handleCredentialResponse(response) {
         if (data.success) {
             checkAuthState();
         } else {
-            showToast('Login failed', 'error');
+            showToast('Login failed: ' + (data.error || 'Unknown error'), 'error');
+            console.error("Login Error from server:", data.trace || data.error);
         }
     } catch (e) {
         console.error("Login request failed", e);
+        showToast('Login request failed. See console.', 'error');
     }
 }
 
