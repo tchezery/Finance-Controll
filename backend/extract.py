@@ -129,7 +129,11 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             continue
             
         cv = str(row.get(col_type, '')).strip().upper()
-        if cv not in ['C', 'V']:
+        if cv in ['C', 'COMPRA', 'BUY', 'B']:
+            cv = 'C'
+        elif cv in ['V', 'VENDA', 'SELL', 'S']:
+            cv = 'V'
+        else:
             continue
             
         date_val = row.get(col_date, '')
