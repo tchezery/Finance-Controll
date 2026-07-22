@@ -150,6 +150,7 @@ def parse_float(val) -> float:
     if pd.isna(val) or val == 'nan' or val == '':
         return 0.0
     if isinstance(val, str):
+        val = val.replace('R$', '').replace('$', '').strip()
         val = val.replace('.', '').replace(',', '.')
     try:
         return float(val)
@@ -208,20 +209,23 @@ def extract_trades(url: str, mappings: dict = None) -> list:
         
         custom_buy = str(mappings.get('buyIndicator', '')).strip().upper()
         custom_sell = str(mappings.get('sellIndicator', '')).strip().upper()
+        custom_div = str(mappings.get('dividendIndicator', '')).strip().upper()
         
         if custom_buy and cv == custom_buy:
             cv = 'C'
         elif custom_sell and cv == custom_sell:
             cv = 'V'
-        elif not custom_buy and not custom_sell:
-            if cv in ['C', 'COMPRA', 'BUY', 'B']:
+        elif custom_div and cv == custom_div:
+            cv = 'D'
+        else:
+            if (not custom_buy) and cv in ['C', 'COMPRA', 'BUY', 'B']:
                 cv = 'C'
-            elif cv in ['V', 'VENDA', 'SELL', 'S']:
+            elif (not custom_sell) and cv in ['V', 'VENDA', 'SELL', 'S']:
                 cv = 'V'
+            elif (not custom_div) and cv in ['D', 'DIVIDENDO', 'RENDIMENTO', 'JCP', 'JUROS', 'R', 'AMORTIZACAO']:
+                cv = 'D'
             else:
                 continue
-        else:
-            continue
             
         date_val = row.get(col_date, '')
         ticker = resolve_ticker(raw_title, mappings.get('customTickers', {}))
@@ -236,7 +240,7 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             'date': parse_date(date_val),
             'ticker': ticker,
             'category': categorize_ticker(ticker, raw_title),
-            'side': 'C' if cv == 'C' else 'V',
+            'side': cv,
             'qty': qty,
             'price': price,
             'value': val_op
@@ -251,11 +255,14 @@ def build_portfolio(trades: list) -> dict:
         'buy_qty': 0, 'buy_value': 0,
         'sell_qty': 0, 'sell_value': 0,
         'net_qty': 0, 'total_cost': 0,
+        'dividends': 0,
         'trades': 0, 'category': 'Outro'
     })
 
     monthly_net = defaultdict(float)
     monthly_buys = defaultdict(float)
+    monthly_dividends = defaultdict(float)
+    monthly_dividends_by_ticker = defaultdict(lambda: defaultdict(float))
 
     for trade in trades:
         ticker = trade['ticker']
@@ -274,20 +281,25 @@ def build_portfolio(trades: list) -> dict:
             
             monthly_net[month] += trade['value']
             monthly_buys[month] += trade['value']
+        elif trade['side'] == 'D':
+            h['dividends'] += trade['value']
+            monthly_dividends[month] += trade['value']
+            monthly_dividends_by_ticker[ticker][month] += trade['value']
         else:
+            held_qty = h['net_qty']
             h['sell_qty'] += trade['qty']
             h['sell_value'] += trade['value']
             h['net_qty'] -= trade['qty']
             monthly_net[month] -= trade['value']
             
-            if h['buy_qty'] > 0:
-                avg_cost = h['total_cost'] / h['buy_qty']
+            if held_qty > 0:
+                avg_cost = h['total_cost'] / held_qty
                 h['total_cost'] -= avg_cost * trade['qty']
 
     # Format JSON Output
     portfolio = []
     for ticker, h in sorted(holdings.items()):
-        if h['net_qty'] <= 0:
+        if h['net_qty'] <= 0 and h['dividends'] <= 0:
             continue
             
         avg_price = h['total_cost'] / h['net_qty'] if h['net_qty'] > 0 else 0
@@ -300,7 +312,8 @@ def build_portfolio(trades: list) -> dict:
             'sellValue': round(h['sell_value'], 2),
             'totalBuys': h['buy_qty'],
             'totalSells': h['sell_qty'],
-            'trades': h['trades']
+            'trades': h['trades'],
+            'dividends': round(h['dividends'], 2)
         })
 
     cumulative = 0
@@ -313,11 +326,23 @@ def build_portfolio(trades: list) -> dict:
         {'month': m, 'invested': round(v, 2)}
         for m, v in sorted(monthly_buys.items())
     ]
+    
+    monthly_divs = [
+        {'month': m, 'dividends': round(v, 2)}
+        for m, v in sorted(monthly_dividends.items())
+    ]
+    
+    monthly_divs_by_ticker = {
+        ticker: {m: round(v, 2) for m, v in sorted(months.items())}
+        for ticker, months in monthly_dividends_by_ticker.items()
+    }
 
     return {
         'holdings': portfolio,
         'monthlyEvolution': monthly_evolution,
         'monthlyInvestments': monthly_investments,
+        'monthlyDividends': monthly_divs,
+        'monthlyDividendsByTicker': monthly_divs_by_ticker,
         'trades': trades,
         'totalTrades': len(trades),
         'lastUpdate': trades[-1]['date'] if trades else None,

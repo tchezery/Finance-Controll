@@ -13,6 +13,8 @@ let historicalDataCache = {};
 let assetAnalysisInitialized = false;
 let activeSingleAsset = '';
 let activeMultiAssets = new Set();
+let activeDividendPeriod = '15';
+let activeDividendAssets = new Set();
 
 // ---- Load portfolio data from JSON ----
 async function loadPortfolioData() {
@@ -152,6 +154,7 @@ function updateDashboard() {
     renderEvolutionChart();
     renderAllocationChart();
     renderInvestmentsChart();
+    renderDividendsChart();
     renderHoldingsBarChart();
     renderPerformanceChart();
     renderTradesTimeline();
@@ -192,12 +195,14 @@ function showToast(message, type = 'success') {
 function updateKPIs() {
     let totalCurrentValue = 0;
     let totalBuyValue = 0;
+    let totalDividends = 0;
 
     PORTFOLIO_DATA.holdings.forEach(h => {
         const quote = currentQuotes[h.ticker];
         const currentPrice = quote ? quote.price : h.avgPrice;
         totalCurrentValue += h.quotas * currentPrice;
-        totalBuyValue += h.buyValue;
+        totalBuyValue += h.quotas * h.avgPrice;
+        if (h.dividends) totalDividends += h.dividends;
     });
 
     const profitLoss = totalCurrentValue - totalBuyValue;
@@ -209,6 +214,12 @@ function updateKPIs() {
     document.getElementById('kpiInvested').textContent = formatCurrency(totalBuyValue);
     const firstDate = PORTFOLIO_DATA.trades[0]?.date || '';
     document.getElementById('kpiInvestedSub').textContent = `Since ${firstDate.split('-').reverse().join('/')}`;
+
+    const kpiDividendsEl = document.getElementById('kpiDividends');
+    if (kpiDividendsEl) {
+        kpiDividendsEl.textContent = formatCurrency(totalDividends);
+        document.getElementById('kpiDividendsSub').textContent = `Since ${firstDate.split('-').reverse().join('/')}`;
+    }
 
     const profitEl = document.getElementById('kpiProfit');
     const profitSubEl = document.getElementById('kpiProfitSub');
@@ -274,7 +285,8 @@ function renderHoldingsTable() {
             <td class="value-cell">
                 <span class="${changeClass}">${changeIcon} ${formatPercent(totalReturn)}</span>
             </td>
-            <td class="value-cell">${formatCurrency(h.buyValue)}</td>
+            <td class="value-cell">${formatCurrency(h.quotas * h.avgPrice)}</td>
+            <td class="value-cell">${formatCurrency(h.dividends)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -425,6 +437,86 @@ function renderInvestmentsChart() {
             maintainAspectRatio: false,
             plugins: { tooltip: { ...tooltipConfig, callbacks: { label: ctx => `Invested: ${formatCurrency(ctx.raw)}` } } },
             scales: { x: { ticks: { font: { size: 11 } } }, y: { ticks: { font: { size: 11 }, callback: v => `R\$${v}` } } }
+        }
+    });
+}
+
+function renderDividendsChart() {
+    destroyChart('dividends');
+    const ctx = (document.getElementById('dividendsChart') as HTMLCanvasElement).getContext('2d');
+    
+    let allMonths = PORTFOLIO_DATA.monthlyDividends.map(d => d.month).sort();
+    if (activeDividendPeriod !== 'all') {
+        allMonths = allMonths.slice(-parseInt(activeDividendPeriod));
+    }
+    
+    const labels = allMonths.map(m => formatMonth(m));
+    let datasets = [];
+    
+    if (activeDividendAssets.size === 0) {
+        // Show total portfolio dividends
+        let data = PORTFOLIO_DATA.monthlyDividends;
+        if (activeDividendPeriod !== 'all') {
+            data = data.slice(-parseInt(activeDividendPeriod));
+        }
+        const values = data.map(d => d.dividends);
+        
+        const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        
+        datasets.push({
+            label: 'Total Dividends',
+            data: values,
+            backgroundColor: gradient,
+            borderColor: '#10b981',
+            borderWidth: 1,
+            borderRadius: 6
+        });
+    } else {
+        // Stacked bars for selected assets
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+        let colorIdx = 0;
+        
+        activeDividendAssets.forEach(ticker => {
+            const tickerData = PORTFOLIO_DATA.monthlyDividendsByTicker[ticker] || {};
+            const values = allMonths.map(m => tickerData[m] || 0);
+            const color = colors[colorIdx % colors.length];
+            
+            datasets.push({
+                label: ticker,
+                data: values,
+                backgroundColor: color,
+                borderWidth: 0,
+                borderRadius: 4
+            });
+            colorIdx++;
+        });
+    }
+
+    chartInstances['dividends'] = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#e2e8f0',
+                    bodyColor: '#cbd5e1',
+                    borderColor: 'rgba(51, 65, 85, 0.5)',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` }
+                },
+                legend: { display: activeDividendAssets.size > 0, position: 'top', labels: { color: '#94a3b8', boxWidth: 12 } }
+            },
+            scales: {
+                x: { stacked: true, grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                y: { stacked: true, grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#94a3b8', font: { size: 11 }, callback: v => `R\$${v}` } }
+            }
         }
     });
 }
@@ -928,21 +1020,68 @@ function initAssetAnalysisControls() {
 
     multiDropdown.addEventListener('change', (e) => {
         const val = e.target.value;
+        if (!val) return;
+        
         if (val === 'ALL_ASSETS') {
-            tickers.forEach(t => activeMultiAssets.add(t));
-            renderPills();
-            renderMultiAssetChart();
+            activeMultiAssets = new Set(tickers);
         } else if (val === 'CLEAR_ALL') {
             activeMultiAssets.clear();
-            renderPills();
-            renderMultiAssetChart();
-        } else if (val && !activeMultiAssets.has(val)) {
+        } else {
             activeMultiAssets.add(val);
-            renderPills();
-            renderMultiAssetChart();
         }
+        
         e.target.value = ''; // Reset dropdown after selection
+        renderPills();
+        renderMultiAssetChart();
     });
+
+    // Dividends UI
+    const divDropdown = document.getElementById('dividendAssetDropdown');
+    const divContainer = document.getElementById('dividendAssetSelectContainer');
+    
+    if (divDropdown && divContainer) {
+        divDropdown.innerHTML = '<option value="ALL">All Assets (Total)</option>';
+        divDropdown.innerHTML += '<option value="CLEAR_ALL">* Clear All</option>';
+        tickers.forEach(t => {
+            divDropdown.innerHTML += `<option value="${t}">${t}</option>`;
+        });
+
+        function renderDivPills() {
+            if (activeDividendAssets.size === 0) {
+                divContainer.style.display = 'none';
+                divDropdown.value = 'ALL';
+                return;
+            }
+            divContainer.style.display = 'flex';
+            divContainer.innerHTML = '';
+            activeDividendAssets.forEach(t => {
+                const pill = document.createElement('div');
+                pill.className = 'ticker-pill active';
+                pill.innerHTML = `${t} <span style="margin-left: 6px; font-weight: bold; font-size: 14px;">&times;</span>`;
+                pill.addEventListener('click', () => {
+                    activeDividendAssets.delete(t);
+                    renderDivPills();
+                    renderDividendsChart();
+                });
+                divContainer.appendChild(pill);
+            });
+        }
+
+        divDropdown.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (!val) return;
+            
+            if (val === 'ALL' || val === 'CLEAR_ALL') {
+                activeDividendAssets.clear();
+            } else {
+                activeDividendAssets.add(val);
+            }
+            
+            divDropdown.value = activeDividendAssets.size === 0 ? 'ALL' : '';
+            renderDivPills();
+            renderDividendsChart();
+        });
+    }
     
     if (tickers.length > 0) {
         singleSelect.value = tickers[0];
@@ -973,6 +1112,7 @@ async function saveChartPeriodToDB(period) {
     
     const buyIndicator = (document.getElementById('buyIndicator') as HTMLInputElement).value;
     const sellIndicator = (document.getElementById('sellIndicator') as HTMLInputElement).value;
+    const dividendIndicator = (document.getElementById('dividendIndicator') as HTMLInputElement).value;
     
     // Gather Custom Tickers
     const customTickers = {};
@@ -986,7 +1126,7 @@ async function saveChartPeriodToDB(period) {
 
     const column_mappings = {
         mapDate, mapAsset, mapType, mapQuantity, mapPrice, mapTotalValue,
-        buyIndicator, sellIndicator, customTickers
+        buyIndicator, sellIndicator, dividendIndicator, customTickers
     };
 
     const refreshInterval = document.getElementById('refreshIntervalSelect').value;
@@ -1012,6 +1152,7 @@ async function saveChartPeriodToDB(period) {
 function initChartPeriodFilters() {
     const invSelect = document.getElementById('investmentsPeriodFilter');
     const trSelect = document.getElementById('tradesPeriodFilter');
+    const divSelect = document.getElementById('dividendPeriodFilter');
 
     if (invSelect) {
         invSelect.addEventListener('change', (e) => {
@@ -1023,6 +1164,11 @@ function initChartPeriodFilters() {
                 trSelect.value = activeInvestmentsPeriod;
                 activeTradesPeriod = activeInvestmentsPeriod;
                 renderTradesTimeline();
+            }
+            if (divSelect && divSelect.value !== activeInvestmentsPeriod) {
+                divSelect.value = activeInvestmentsPeriod;
+                activeDividendPeriod = activeInvestmentsPeriod;
+                renderDividendsChart();
             }
             saveChartPeriodToDB(activeInvestmentsPeriod);
         });
@@ -1039,7 +1185,31 @@ function initChartPeriodFilters() {
                 activeInvestmentsPeriod = activeTradesPeriod;
                 renderInvestmentsChart();
             }
+            if (divSelect && divSelect.value !== activeTradesPeriod) {
+                divSelect.value = activeTradesPeriod;
+                activeDividendPeriod = activeTradesPeriod;
+                renderDividendsChart();
+            }
             saveChartPeriodToDB(activeTradesPeriod);
+        });
+    }
+    
+    if (divSelect) {
+        divSelect.addEventListener('change', (e) => {
+            activeDividendPeriod = e.target.value;
+            renderDividendsChart();
+            
+            if (invSelect && invSelect.value !== activeDividendPeriod) {
+                invSelect.value = activeDividendPeriod;
+                activeInvestmentsPeriod = activeDividendPeriod;
+                renderInvestmentsChart();
+            }
+            if (trSelect && trSelect.value !== activeDividendPeriod) {
+                trSelect.value = activeDividendPeriod;
+                activeTradesPeriod = activeDividendPeriod;
+                renderTradesTimeline();
+            }
+            saveChartPeriodToDB(activeDividendPeriod);
         });
     }
 }
@@ -1095,6 +1265,9 @@ function populatePortfolioForm(id) {
                     const sellInput = document.getElementById('sellIndicator') as HTMLInputElement;
                     if (sellInput) sellInput.value = m.sellIndicator || '';
                     
+                    const divInput = document.getElementById('dividendIndicator') as HTMLInputElement;
+                    if (divInput) divInput.value = m.dividendIndicator || '';
+                    
                     document.getElementById('mappingSection').style.display = 'block';
                     
                     // Render Custom Tickers
@@ -1140,6 +1313,8 @@ function populatePortfolioForm(id) {
         if (buyInput) buyInput.value = '';
         const sellInput = document.getElementById('sellIndicator') as HTMLInputElement;
         if (sellInput) sellInput.value = '';
+        const divInput = document.getElementById('dividendIndicator') as HTMLInputElement;
+        if (divInput) divInput.value = '';
         
         if (btn) btn.style.display = 'none';
         const shareBtn = document.getElementById('sharePortfolioBtn');
@@ -1492,7 +1667,8 @@ document.addEventListener('DOMContentLoaded', () => {
             mapPrice: document.getElementById('mapPrice').value.trim(),
             mapTotalValue: document.getElementById('mapTotalValue').value.trim(),
             buyIndicator: (document.getElementById('buyIndicator') as HTMLInputElement)?.value.trim() || '',
-            sellIndicator: (document.getElementById('sellIndicator') as HTMLInputElement)?.value.trim() || ''
+            sellIndicator: (document.getElementById('sellIndicator') as HTMLInputElement)?.value.trim() || '',
+            dividendIndicator: (document.getElementById('dividendIndicator') as HTMLInputElement)?.value.trim() || '',
         };
         const refreshInterval = document.getElementById('refreshIntervalSelect').value;
         const theme = document.getElementById('themeSelect') ? document.getElementById('themeSelect').value : 'theme-claude';

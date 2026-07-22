@@ -132,6 +132,21 @@
                     <div class="kpi-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                            <path d="M12 18V6"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Total Dividends</span>
+                        <span class="kpi-value" id="kpiDividends">--</span>
+                        <span class="kpi-sub" id="kpiDividendsSub">Since the beginning</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-trades">
+                    <div class="kpi-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M16 3h5v5" />
                             <path d="M8 3H3v5" />
                             <path d="M12 22V8" />
@@ -208,6 +223,33 @@
                 </div>
             </section>
 
+            <!-- Dividends Row -->
+            <section class="charts-row">
+                <div class="chart-card chart-large" style="width: 100%;">
+                    <div class="chart-header" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                            <h2 class="chart-title">Monthly Dividends</h2>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <select id="dividendPeriodFilter" class="modern-select">
+                                    <option value="15">Last 15 months</option>
+                                    <option value="36">Last 3 years</option>
+                                    <option value="all">All time</option>
+                                </select>
+                                <select id="dividendAssetDropdown" class="modern-select" style="min-width: 140px;">
+                                    <option value="ALL">All Assets (Total)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="multi-select-container" id="dividendAssetSelectContainer" style="min-height: 32px; display: none;">
+                            <!-- Selected assets will appear here -->
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dividendsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
             <!-- Asset Analysis -->
             <section class="charts-row">
                 <div class="chart-card chart-medium" id="singleAssetCard">
@@ -266,6 +308,7 @@
                                     <th class="value-cell">Current Value</th>
                                     <th class="value-cell">Total Return</th>
                                     <th class="value-cell">Total Cost</th>
+                                    <th class="value-cell">Total Dividends</th>
                                 </tr>
                             </thead>
                             <tbody id="holdingsBody">
@@ -499,14 +542,18 @@
                             <h4 style="font-size: 13px; margin-bottom: 8px;">Custom Buy/Sell Indicators (Optional)</h4>
                             <p style="font-size: 11px; margin-bottom: 12px; color: var(--text-secondary);">If your spreadsheet uses different words or letters for Buy and Sell operations, define them here. Leave blank to use the standard defaults (C, V, Buy, Sell, Compra, Venda).</p>
                             
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
                                 <div>
                                     <label style="font-size: 12px; font-weight: bold; margin-bottom: 4px; display: block;">Buy Indicator</label>
-                                    <input type="text" id="buyIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., 1 or Buy">
+                                    <input type="text" id="buyIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., C">
                                 </div>
                                 <div>
                                     <label style="font-size: 12px; font-weight: bold; margin-bottom: 4px; display: block;">Sell Indicator</label>
-                                    <input type="text" id="sellIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., 0 or Sell">
+                                    <input type="text" id="sellIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., V">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: bold; margin-bottom: 4px; display: block;">Dividend Indicator</label>
+                                    <input type="text" id="dividendIndicator" class="styled-select" style="width: 100%; box-sizing: border-box;" placeholder="e.g., R">
                                 </div>
                             </div>
                         </div>
