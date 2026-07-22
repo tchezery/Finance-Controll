@@ -7,7 +7,7 @@ import re
 from flask import Flask, send_from_directory, jsonify, request, session, Response
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
-from extract import extract_trades, build_portfolio, SHEETS_URL
+from extract import extract_trades, build_portfolio
 import database
 
 FRONTEND_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
