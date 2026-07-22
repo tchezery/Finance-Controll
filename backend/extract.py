@@ -7,7 +7,7 @@ import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 import os
-from backend.dividends import calculate_auto_dividends
+from dividends import calculate_auto_dividends
 
 # In-memory cache for API-resolved tickers (persists for the process lifetime)
 _ticker_cache = {}
