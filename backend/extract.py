@@ -135,11 +135,21 @@ def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
     _ticker_cache[cache_key] = clean
     return clean
 
-def categorize_ticker(ticker: str) -> str:
-    """Classifica o tipo do ativo baseado no sufixo do ticker."""
+def categorize_ticker(ticker: str, original_name: str = '') -> str:
+    """Classifica o tipo do ativo baseado no sufixo do ticker ou no nome original da B3."""
     if ticker.endswith('11'): return 'FII'
     elif ticker.endswith('34'): return 'BDR'
     elif ticker.endswith('3') or ticker.endswith('4'): return 'Ações'
+    
+    # Fallback: use hints from the original B3 name for unresolved tickers
+    if original_name:
+        upper = original_name.upper()
+        if 'DRN' in upper or 'BDR' in upper:
+            return 'BDR'
+        if 'FII' in upper or 'FIAGRO' in upper:
+            return 'FII'
+        if ' PN' in upper or ' ON' in upper:
+            return 'Ações'
     return 'Outro'
 
 def parse_float(val) -> float:
@@ -232,7 +242,7 @@ def extract_trades(url: str, mappings: dict = None) -> list:
         trades.append({
             'date': parse_date(date_val),
             'ticker': ticker,
-            'category': categorize_ticker(ticker),
+            'category': categorize_ticker(ticker, raw_title),
             'side': 'C' if cv == 'C' else 'V',
             'qty': qty,
             'price': price,
@@ -248,7 +258,7 @@ def build_portfolio(trades: list) -> dict:
         'buy_qty': 0, 'buy_value': 0,
         'sell_qty': 0, 'sell_value': 0,
         'net_qty': 0, 'total_cost': 0,
-        'trades': 0
+        'trades': 0, 'category': 'Outro'
     })
 
     monthly_net = defaultdict(float)
@@ -261,6 +271,7 @@ def build_portfolio(trades: list) -> dict:
         # Consolidate Assets
         h = holdings[ticker]
         h['trades'] += 1
+        h['category'] = trade['category']  # use category from trade (has original name fallback)
 
         if trade['side'] == 'C':
             h['buy_qty'] += trade['qty']
@@ -289,7 +300,7 @@ def build_portfolio(trades: list) -> dict:
         avg_price = h['total_cost'] / h['net_qty'] if h['net_qty'] > 0 else 0
         portfolio.append({
             'ticker': ticker,
-            'category': categorize_ticker(ticker),
+            'category': h['category'],
             'quotas': h['net_qty'],
             'avgPrice': round(avg_price, 2),
             'buyValue': round(h['buy_value'], 2),
