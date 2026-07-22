@@ -209,7 +209,8 @@ function updateKPIs() {
     const profitPercent = totalBuyValue > 0 ? (profitLoss / totalBuyValue) * 100 : 0;
 
     document.getElementById('kpiTotalValue').textContent = formatCurrency(totalCurrentValue);
-    document.getElementById('kpiTotalSub').textContent = `${PORTFOLIO_DATA.holdings.length} assets in portfolio`;
+    const activeHoldingsCount = PORTFOLIO_DATA.holdings.filter(h => h.quotas > 0).length;
+    document.getElementById('kpiTotalSub').textContent = `${activeHoldingsCount} assets in portfolio`;
 
     document.getElementById('kpiInvested').textContent = formatCurrency(totalBuyValue);
     const firstDate = PORTFOLIO_DATA.trades[0]?.date || '';
@@ -240,8 +241,8 @@ function renderHoldingsTable() {
     tbody.innerHTML = '';
 
     const filtered = activeFilter === 'all'
-        ? PORTFOLIO_DATA.holdings
-        : PORTFOLIO_DATA.holdings.filter(h => h.category === activeFilter);
+        ? PORTFOLIO_DATA.holdings.filter(h => h.quotas > 0)
+        : PORTFOLIO_DATA.holdings.filter(h => h.category === activeFilter && h.quotas > 0);
 
     const sorted = [...filtered].sort((a, b) => {
         const aPrice = currentQuotes[a.ticker]?.price || a.avgPrice;
@@ -350,8 +351,9 @@ function renderAllocationChart() {
     destroyChart('allocation');
     const ctx = document.getElementById('allocationChart').getContext('2d');
 
+    const filteredHoldings = PORTFOLIO_DATA.holdings.filter(h => h.quotas > 0);
     const categoryTotals = {};
-    PORTFOLIO_DATA.holdings.forEach(h => {
+    filteredHoldings.forEach(h => {
         const price = currentQuotes[h.ticker]?.price || h.avgPrice;
         categoryTotals[h.category] = (categoryTotals[h.category] || 0) + (h.quotas * price);
     });
@@ -509,7 +511,17 @@ function renderDividendsChart() {
                     borderColor: 'rgba(51, 65, 85, 0.5)',
                     borderWidth: 1,
                     padding: 12,
-                    callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` }
+                    callbacks: { 
+                        label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`,
+                        footer: (tooltipItems) => {
+                            if (activeDividendAssets.size > 0) {
+                                let total = 0;
+                                tooltipItems.forEach(item => { total += item.raw; });
+                                return `\nTotal: ${formatCurrency(total)}`;
+                            }
+                            return null;
+                        }
+                    }
                 },
                 legend: { display: activeDividendAssets.size > 0, position: 'top', labels: { color: '#94a3b8', boxWidth: 12 } }
             },
@@ -525,7 +537,7 @@ function renderHoldingsBarChart() {
     destroyChart('holdingsBar');
     const ctx = document.getElementById('holdingsBarChart').getContext('2d');
 
-    const sorted = [...PORTFOLIO_DATA.holdings].map(h => {
+    const sorted = [...PORTFOLIO_DATA.holdings].filter(h => h.quotas > 0).map(h => {
         return { ...h, currentValue: h.quotas * (currentQuotes[h.ticker]?.price || h.avgPrice) };
     }).sort((a, b) => b.currentValue - a.currentValue);
 
@@ -562,7 +574,7 @@ function renderPerformanceChart() {
     destroyChart('performance');
     const ctx = document.getElementById('performanceChart').getContext('2d');
 
-    const withPerf = PORTFOLIO_DATA.holdings.map(h => {
+    const withPerf = PORTFOLIO_DATA.holdings.filter(h => h.quotas > 0).map(h => {
         const price = currentQuotes[h.ticker]?.price || h.avgPrice;
         const perf = h.avgPrice > 0 ? ((price - h.avgPrice) / h.avgPrice) * 100 : 0;
         return { ...h, performance: perf, currentPrice: price };

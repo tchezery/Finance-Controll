@@ -297,11 +297,12 @@ def build_portfolio(trades: list) -> dict:
             h['sell_qty'] += trade['qty']
             h['sell_value'] += trade['value']
             h['net_qty'] -= trade['qty']
-            monthly_net[month] -= trade['value']
             
             if held_qty > 0:
                 avg_cost = h['total_cost'] / held_qty
-                h['total_cost'] -= avg_cost * trade['qty']
+                cost_basis_sold = avg_cost * trade['qty']
+                h['total_cost'] -= cost_basis_sold
+                monthly_net[month] -= cost_basis_sold
 
     # Format JSON Output
     portfolio = []
