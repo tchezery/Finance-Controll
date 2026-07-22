@@ -581,7 +581,7 @@ document.querySelectorAll('.main-nav .nav-tab').forEach(tab => {
 });
 
 // Holdings Filter
-document.querySelectorAll('.holdings-section:first-of-type .filter-tabs .filter-tab').forEach(tab => {
+document.querySelectorAll('#dashboardView .holdings-section .filter-tabs .filter-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         const siblings = tab.parentElement.querySelectorAll('.filter-tab');
         siblings.forEach(t => t.classList.remove('active'));

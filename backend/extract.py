@@ -1,6 +1,9 @@
 import pandas as pd
 import json
 import re
+import unicodedata
+import urllib.request
+import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 import os
@@ -17,38 +20,70 @@ SHEETS_URL = os.getenv('SHEETS_URL')
 
 OUTPUT_JSON = os.path.join(os.path.dirname(__file__), 'portfolio_data.json')
 
-
-TITLE_TO_TICKER = {
-    'FII MAXI REN': 'MXRF11',
-    'FII GUARDIAN': 'GARE11',
-    'FII BTG CRI': 'BTCI11',
-    'FIAGRO FGA': 'FGAA11',
-    'FIAGRO SUNO': 'SNAG11',
-    'FII PVBI VBI': 'PVBI11',
-    'FII VBI PRI': 'PVBI11',
-    'FII VALREIII': 'VGIR11',
-    'FII VALREIJI': 'VGIR11',
-    'FII HSI MALL': 'HSML11',
-    'FII XP MALLS': 'XPML11',
-    'FII BTLG': 'BTLG11',
-    'ISHARES BOVA': 'BOVA11',
-    'ISHARE SP500': 'IVVB11',
-    'NU REND IBOV': 'NDIV11',
-    'PETROBRAS PN': 'PETR4',
-    'BRADESCO PN': 'BBDC4',
-    'BRASIL ON': 'BBAS3',
-    'GERDAU PN': 'GGBR4',
-    'APPLE DRN': 'AAPL34',
-    'AMAZON DRN': 'AMZO34',
-    'GOOGLE DRN': 'GOGL34',
-}
+# In-memory cache for API-resolved tickers (persists for the process lifetime)
+_ticker_cache = {}
 
 # ==========================================
-# HELPER FUNCTIONS
+# BRAPI.DEV TICKER RESOLUTION
 # ==========================================
+
+def _strip_accents(text: str) -> str:
+    """Remove accented characters (e.g. Ú → U, É → E)."""
+    nfkd = unicodedata.normalize('NFKD', text)
+    return ''.join(c for c in nfkd if not unicodedata.combining(c))
+
+def _detect_asset_type(name: str) -> str:
+    """Detect the likely B3 asset type from the raw sheet name."""
+    upper = name.upper()
+    if 'DRN' in upper or 'BDR' in upper:
+        return 'bdr'
+    if 'FII' in upper or 'FIAGRO' in upper or 'ISHARE' in upper or 'NU REND' in upper:
+        return 'fund'
+    return 'stock'
+
+def _extract_search_term(name: str) -> str:
+    """Extract a clean company/fund keyword from the B3 full title for API search."""
+    clean = name.strip()
+    # Remove common B3 suffixes: CI, ER, ERA, ES, EJ, ED, ATZ, D, N1, N2, NM, DRN, PN, ON
+    clean = re.sub(r'\s+(?:CI\s+)?(?:ER[A]?|ES|EJ|ED|ATZ|D)?\s*(?:[@#]+)?\s*$', '', clean)
+    clean = re.sub(r'\s+(?:N[12M]+|CI|DRN|BDR|PN|ON)\s*$', '', clean)
+    clean = re.sub(r'\s+(?:CI|DRN|BDR|PN|ON)\s*$', '', clean)  # second pass
+    clean = clean.strip()
+    
+    # For FII/FIAGRO names like "FII CORPORATE CI", extract the fund name part
+    fii_match = re.match(r'^(?:FII|FIAGRO)\s+(.+)', clean, re.IGNORECASE)
+    if fii_match:
+        return fii_match.group(1).strip()
+    
+    return clean
+
+def _search_brapi(search_term: str, asset_type: str = None) -> str | None:
+    """Query brapi.dev to resolve a search term to a B3 ticker symbol."""
+    try:
+        # Strip accents for better API matching
+        term = _strip_accents(search_term)
+        params = {'search': term, 'limit': '1'}
+        if asset_type:
+            params['type'] = asset_type
+        
+        url = f"https://brapi.dev/api/quote/list?{urllib.parse.urlencode(params)}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+            stocks = data.get('stocks', [])
+            if stocks and len(stocks) > 0:
+                return stocks[0].get('stock')
+    except Exception as e:
+        print(f"  [brapi] Search failed for '{search_term}': {e}")
+    return None
+
+def _is_valid_ticker(name: str) -> bool:
+    """Check if a string already looks like a valid B3 ticker (e.g. PETR4, MXRF11, AAPL34)."""
+    return bool(re.match(r'^[A-Z]{3,6}\d{1,2}$', name.upper().strip()))
 
 def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
-    """Maps the full B3 name to the corresponding official Ticker."""
+    """Maps the full B3 name to the corresponding official ticker, using brapi.dev API."""
     clean = str(title_str).strip()
     
     # User's custom defined mappings take highest priority
@@ -57,16 +92,47 @@ def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
             if clean.upper() == name.upper() or clean.upper().startswith(name.upper()):
                 return ticker
     
-    # Remove sufixos comuns da B3
-    title_clean = re.sub(r'\s+(?:CI\s+)?(?:ER[A]?|ES|EJ|ED|ATZ|D)?\s*(?:[@#]+)?\s*$', '', clean)
-    title_clean = re.sub(r'\s+(?:N[12M]+|CI)\s*$', '', title_clean)
-    title_clean = re.sub(r'\s+(?:CI)\s*$', '', title_clean)
-    title_clean = title_clean.strip()
+    # If it already looks like a valid ticker, return it directly
+    if _is_valid_ticker(clean):
+        return clean.upper()
     
-    # Busca pela string mais longa que dá match (evita falsos positivos)
-    for title, ticker in sorted(TITLE_TO_TICKER.items(), key=lambda x: -len(x[0])):
-        if title_clean.startswith(title):
-            return ticker
+    # Check cache
+    cache_key = clean.upper()
+    if cache_key in _ticker_cache:
+        return _ticker_cache[cache_key]
+    
+    # Detect asset type and extract search term
+    asset_type = _detect_asset_type(clean)
+    search_term = _extract_search_term(clean)
+    
+    # Strategy 1: Search with extracted keyword + asset type
+    resolved = _search_brapi(search_term, asset_type)
+    
+    # Strategy 2: Search with keyword only (no type filter)
+    if not resolved:
+        resolved = _search_brapi(search_term)
+    
+    # Strategy 3: Try the full cleaned name (without suffixes) as search
+    if not resolved:
+        full_clean = re.sub(r'\s+(?:CI|DRN|BDR|PN|ON)\s*$', '', _strip_accents(clean)).strip()
+        if full_clean != _strip_accents(search_term):
+            resolved = _search_brapi(full_clean, asset_type)
+            if not resolved:
+                resolved = _search_brapi(full_clean)
+    
+    # Strategy 4: For FII/FIAGRO, try "FII <keyword>" as a search (some are listed that way)
+    if not resolved and asset_type == 'fund':
+        prefix = 'FIAGRO' if 'FIAGRO' in clean.upper() else 'FII'
+        resolved = _search_brapi(f"{prefix} {_strip_accents(search_term)}")
+    
+    if resolved:
+        print(f"  [brapi] Resolved '{clean}' -> {resolved}")
+        _ticker_cache[cache_key] = resolved
+        return resolved
+    
+    # Fallback: return the cleaned name
+    print(f"  [brapi] Could not resolve '{clean}', keeping as-is")
+    _ticker_cache[cache_key] = clean
     return clean
 
 def categorize_ticker(ticker: str) -> str:
