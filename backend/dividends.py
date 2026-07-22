@@ -120,7 +120,17 @@ def calculate_auto_dividends(trades):
             ex_date_dt = datetime.fromtimestamp(event['date'])
             ex_date_str = ex_date_dt.strftime('%Y-%m-%d')
             amount = event['amount']
-            
+            # Heuristic to align with Payment Date:
+            # If the ex-date is late in the month (e.g., > 20th), it almost certainly pays in the NEXT month.
+            # We push the display date to the 1st of the next month so the charts align better with cashflow.
+            if ex_date_dt.day > 20:
+                # Add 15 days to push into next month, then set to 1st day
+                from datetime import timedelta
+                display_date_dt = (ex_date_dt + timedelta(days=15)).replace(day=1)
+                display_date_str = display_date_dt.strftime('%Y-%m-%d')
+            else:
+                display_date_str = ex_date_str
+
             applicable_balance = 0
             for trade_date, balance in b_history:
                 if trade_date < ex_date_str:
@@ -131,7 +141,7 @@ def calculate_auto_dividends(trades):
             if applicable_balance > 0:
                 total_dividend = applicable_balance * amount
                 auto_dividends.append({
-                    'date': ex_date_str, 
+                    'date': display_date_str, 
                     'ticker': ticker,
                     'category': next((t['category'] for t in sorted_trades if t['ticker'] == ticker), 'Outro'),
                     'side': 'D',
