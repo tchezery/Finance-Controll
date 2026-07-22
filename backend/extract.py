@@ -85,6 +85,7 @@ def _is_valid_ticker(name: str) -> bool:
 # Known exceptions that the API struggles with (e.g., different company name on B3)
 KNOWN_EXCEPTIONS = {
     'GOOGLE DRN': 'GOGL34',
+    'FII RENDA PRIME': 'URPR11',
 }
 
 def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
