@@ -7,6 +7,8 @@ import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 import os
+from backend.dividends import calculate_auto_dividends
+
 # In-memory cache for API-resolved tickers (persists for the process lifetime)
 _ticker_cache = {}
 
@@ -246,8 +248,13 @@ def extract_trades(url: str, mappings: dict = None) -> list:
             'value': val_op
         })
         
-    # Sort chronologically
-    return sorted(trades, key=lambda t: t['date'])
+    # Sort chronologically before calculating dividends
+    trades = sorted(trades, key=lambda t: t['date'])
+    
+    # Auto-calculate dividends from API based on historical quotas
+    trades = calculate_auto_dividends(trades)
+    
+    return trades
 
 def build_portfolio(trades: list) -> dict:
     """Calculates current position, average price, allocation, and temporal evolution."""
