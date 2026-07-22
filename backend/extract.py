@@ -7,19 +7,6 @@ import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# ==========================================
-# CONFIGURATION & MAPPINGS
-# ==========================================
-
-SHEETS_URL = os.getenv('SHEETS_URL')
-
-OUTPUT_JSON = os.path.join(os.path.dirname(__file__), 'portfolio_data.json')
-
 # In-memory cache for API-resolved tickers (persists for the process lifetime)
 _ticker_cache = {}
 
@@ -336,23 +323,3 @@ def build_portfolio(trades: list) -> dict:
         'lastUpdate': trades[-1]['date'] if trades else None,
         'generatedAt': datetime.now().isoformat()
     }
-
-def main():
-    print("Downloading data from Google Sheets...")
-    trades = extract_trades(SHEETS_URL)
-    
-    if not trades:
-        print("No transactions found.")
-        return
-        
-    dashboard_data = build_portfolio(trades)
-
-    with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
-        json.dump(dashboard_data, f, indent=2, ensure_ascii=False)
-
-    print(f"✅ Success! Extracted {len(trades)} operations.")
-    print(f"✅ {len(dashboard_data['holdings'])} assets in portfolio.")
-    print(f"✅ File {OUTPUT_JSON} updated successfully!")
-
-if __name__ == '__main__':
-    main()
