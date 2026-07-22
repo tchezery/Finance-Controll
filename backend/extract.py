@@ -82,6 +82,11 @@ def _is_valid_ticker(name: str) -> bool:
     """Check if a string already looks like a valid B3 ticker (e.g. PETR4, MXRF11, AAPL34)."""
     return bool(re.match(r'^[A-Z]{3,6}\d{1,2}$', name.upper().strip()))
 
+# Known exceptions that the API struggles with (e.g., different company name on B3)
+KNOWN_EXCEPTIONS = {
+    'GOOGLE DRN': 'GOGL34',
+}
+
 def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
     """Maps the full B3 name to the corresponding official ticker, using brapi.dev API."""
     clean = str(title_str).strip()
@@ -91,6 +96,11 @@ def resolve_ticker(title_str: str, custom_tickers: dict = None) -> str:
         for name, ticker in custom_tickers.items():
             if clean.upper() == name.upper() or clean.upper().startswith(name.upper()):
                 return ticker
+                
+    # Check known exceptions
+    for name, ticker in KNOWN_EXCEPTIONS.items():
+        if clean.upper() == name.upper() or clean.upper().startswith(name.upper()):
+            return ticker
     
     # If it already looks like a valid ticker, return it directly
     if _is_valid_ticker(clean):
