@@ -201,7 +201,7 @@ function updateKPIs() {
         const quote = currentQuotes[h.ticker];
         const currentPrice = quote ? quote.price : h.avgPrice;
         totalCurrentValue += h.quotas * currentPrice;
-        totalBuyValue += h.quotas * h.avgPrice;
+        totalBuyValue += (h.totalCost !== undefined ? h.totalCost : h.quotas * h.avgPrice);
         if (h.dividends) totalDividends += h.dividends;
     });
 
@@ -286,7 +286,7 @@ function renderHoldingsTable() {
             <td class="value-cell">
                 <span class="${changeClass}">${changeIcon} ${formatPercent(totalReturn)}</span>
             </td>
-            <td class="value-cell">${formatCurrency(h.quotas * h.avgPrice)}</td>
+            <td class="value-cell">${formatCurrency(h.totalCost !== undefined ? h.totalCost : h.quotas * h.avgPrice)}</td>
             <td class="value-cell">${formatCurrency(h.dividends)}</td>
         `;
         tbody.appendChild(tr);

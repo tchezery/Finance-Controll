@@ -316,6 +316,7 @@ def build_portfolio(trades: list) -> dict:
             'category': h['category'],
             'quotas': h['net_qty'],
             'avgPrice': round(avg_price, 2),
+            'totalCost': round(h['total_cost'], 2),
             'buyValue': round(h['buy_value'], 2),
             'sellValue': round(h['sell_value'], 2),
             'totalBuys': h['buy_qty'],
