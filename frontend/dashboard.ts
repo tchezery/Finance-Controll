@@ -19,17 +19,23 @@ async function loadPortfolioData() {
     try {
         const resp = await fetch('/api/portfolio');
         if (!resp.ok) {
-            const errData = await resp.json();
+            let errData = { error: `HTTP ${resp.status}` };
+            try { errData = await resp.json(); } catch (_) {}
             console.error('Failed to load portfolio:', errData);
             const textEl = document.getElementById('updateTime');
             if (textEl) textEl.textContent = errData.error || 'Error loading data';
             return false;
         }
-        PORTFOLIO_DATA = await resp.json();
+        const data = await resp.json();
+        if (!data || !data.holdings || !data.trades) {
+            console.error('Portfolio data is missing required fields:', data);
+            return false;
+        }
+        PORTFOLIO_DATA = data;
         console.log('Portfolio data loaded:', PORTFOLIO_DATA.holdings.length, 'holdings');
         return true;
     } catch (err) {
-        console.error('Failed to load portfolio_data.json:', err);
+        console.error('Failed to load portfolio data:', err);
         const textEl = document.getElementById('updateTime');
         if (textEl) textEl.textContent = 'Error loading data';
         return false;
@@ -510,6 +516,7 @@ function renderPerformanceChart() {
 let activeTradesPeriod = '15';
 
 function renderTradesTimeline() {
+    if (!PORTFOLIO_DATA || !PORTFOLIO_DATA.trades) return;
     destroyChart('trades');
     const ctx = document.getElementById('tradesChart').getContext('2d');
 
@@ -615,6 +622,7 @@ if (periodSelect) {
 }
 
 function initHistoryFilters() {
+    if (!PORTFOLIO_DATA || !PORTFOLIO_DATA.trades) return;
     const select = document.getElementById('historyTickerFilter');
     if (!select) return;
     
@@ -632,6 +640,7 @@ function initHistoryFilters() {
 
 // ---- History Table Render ----
 function renderFullHistoryTable() {
+    if (!PORTFOLIO_DATA || !PORTFOLIO_DATA.trades) return;
     const tbody = document.getElementById('fullHistoryBody');
     if (!tbody) return;
     tbody.innerHTML = '';
