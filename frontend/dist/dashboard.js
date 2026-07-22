@@ -82,7 +82,13 @@ async function fetchQuotes() {
             failedCount++;
         }
     }
-    if (fetchedCount > 0) {
+    if (tickers.length === 0) {
+        if (statusBadge)
+            statusBadge.className = 'status-badge';
+        if (statusText)
+            statusText.textContent = 'No quotes to load';
+    }
+    else if (fetchedCount > 0) {
         if (statusBadge)
             statusBadge.className = 'status-badge';
         if (statusText) {
